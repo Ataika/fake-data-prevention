@@ -1,0 +1,1033 @@
+{
+  "generated_at": "2026-02-17T15:49:12.178541",
+  "total": 102,
+  "valid": 100,
+  "modification": 0,
+  "fabrication": 1,
+  "replay": 1,
+  "invalid_cert": 0,
+  "results": [
+    {
+      "tx_id": "TXN-2024-0001",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1241.26,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0002",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4433.57,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0003",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 692.02,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0004",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2141.39,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0005",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 248.5,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0006",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3837.98,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0007",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2944.62,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0008",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2521.68,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0009",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 859.4,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0010",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 900.09,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0011",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4019.16,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0012",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 821.87,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0013",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3522.95,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0014",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2201.16,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0015",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2872.22,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0016",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1841.29,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0017",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1992.82,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0018",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 423.98,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0019",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3566.81,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0020",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 359.96,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0021",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4065.8,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0022",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2091.88,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0023",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3659.67,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0024",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1241.2,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0025",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 961.26,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0026",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2188.05,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0027",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 98.75,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0028",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2663.43,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0029",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2513.04,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0030",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 201.4,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0031",
+      "status": "\u274c FABRICATION DETECTED",
+      "cert_valid": true,
+      "jwt_valid": false,
+      "digest_valid": false,
+      "sig_valid": false,
+      "error": "Decryption failed: 'utf-8' codec can't decode byte 0x80 in position 816: invalid start byte",
+      "amount": null,
+      "sender": null
+    },
+    {
+      "tx_id": "TXN-2024-0032",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3539.92,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0033",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2235.43,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0034",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 350.6,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0035",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 392.54,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0036",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3470.75,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0037",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2244.7,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0038",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 899.77,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0039",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4267.18,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0040",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1297.9,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0041",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2714.51,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0042",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3088.9,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0043",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1390.22,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0044",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1889.49,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0045",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1017.92,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0046",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2099.69,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0047",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2782.17,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0048",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4382.41,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0049",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2974.72,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0050",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 660.98,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0051",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4243.67,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0052",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4489.67,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0053",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3168.4,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0054",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2032.25,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0055",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3320.57,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0056",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3139.31,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0057",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3131.71,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0058",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2733.14,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0059",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3435.69,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0060",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2292.17,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0061",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1562.17,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0062",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2413.98,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0063",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 232.62,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0064",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2384.8,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0065",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3809.93,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0066",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3542.65,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0067",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1771.1,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0068",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3093.37,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0069",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3961.21,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0070",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2361.67,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0071",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3623.86,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0072",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1616.44,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0072-REPLAY",
+      "status": "\u274c REPLAY ATTACK DETECTED",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "error": "Row tagged as REPLAY \u2014 duplicate transaction ID injected",
+      "amount": 1616.44,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0073",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 265.77,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0074",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3654.98,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0075",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3166.95,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0076",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2154.71,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0077",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1492.37,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0078",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1685.64,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0079",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 626.12,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0080",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3530.46,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0081",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4306.66,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0082",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 952.46,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0083",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3586.48,
+      "sender": "Ivan Petrov"
+    },
+    {
+      "tx_id": "TXN-2024-0084",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1433.45,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0085",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 4012.01,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-2024-0086",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1696.6,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0087",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3277.24,
+      "sender": "Sara Conti"
+    },
+    {
+      "tx_id": "TXN-2024-0088",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1933.16,
+      "sender": "Fatima Al-Sayed"
+    },
+    {
+      "tx_id": "TXN-2024-0089",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1552.88,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0090",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2949.31,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0091",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 1725.12,
+      "sender": "Luca Esposito"
+    },
+    {
+      "tx_id": "TXN-2024-0092",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3377.01,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0093",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 886.3,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0094",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2884.41,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0095",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 595.09,
+      "sender": "Giulia Ferrari"
+    },
+    {
+      "tx_id": "TXN-2024-0096",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 2524.69,
+      "sender": "Chen Wei"
+    },
+    {
+      "tx_id": "TXN-2024-0097",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 3562.45,
+      "sender": "Ahmed Malik"
+    },
+    {
+      "tx_id": "TXN-2024-0098",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 701.69,
+      "sender": "Marco Bianchi"
+    },
+    {
+      "tx_id": "TXN-2024-0099",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 838.98,
+      "sender": "Alice Rossi"
+    },
+    {
+      "tx_id": "TXN-2024-0100",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 267.06,
+      "sender": "Ana Garcia"
+    },
+    {
+      "tx_id": "TXN-FAKE-9999",
+      "status": "\u2705 VALID",
+      "cert_valid": true,
+      "jwt_valid": true,
+      "digest_valid": true,
+      "sig_valid": true,
+      "amount": 99999.99,
+      "sender": "Attacker Zero"
+    }
+  ]
+}
