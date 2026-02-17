@@ -1,7 +1,7 @@
-# 🔐 Fake Data Prevention with Conventional Cryptotools
+#  Fake Data Prevention with Conventional Cryptotools
 
 > **System Security Project** — Università degli Studi di Messina, Data Analysis  
-> Academic Year 2024/2025
+> Academic Year 2025/2026
 
 ---
 
@@ -170,4 +170,4 @@ reportlab>=4.0.0
 Student Project — System Security  
 Università degli Studi di Messina  
 Faculty of Science — Data Analysis  
-Academic Year 2024/2025
+Academic Year 2025/2026
