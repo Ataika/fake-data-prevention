@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fake Data Prevention — Security Dashboard</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ok:      #27ae60;
+      --ok-bg:   #eafaf1;
+      --tamper:  #e74c3c;
+      --tamper-bg: #fdedec;
+      --fake:    #e67e22;
+      --fake-bg: #fef5e7;
+      --replay:  #8e44ad;
+      --replay-bg: #f5eef8;
+      --cert:    #2980b9;
+      --cert-bg: #ebf5fb;
+      --dark:    #2c3e50;
+      --mid:     #566573;
+      --light:   #f0f3f4;
+      --border:  #dce1e7;
+      --card:    #ffffff;
+      --accent:  #2980b9;
+      --font:    'Segoe UI', system-ui, sans-serif;
+    }
+    body {
+      font-family: var(--font);
+      background: #eef2f7;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ──────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a252f 0%, #2c3e50 60%, #34495e 100%);
+      color: white;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .brand { display: flex; align-items: center; gap: .75rem; }
+    header .brand .icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #3498db, #2ecc71);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 900; color: white;
+    }
+    header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .3px; }
+    header p  { font-size: .75rem; opacity: .65; margin-top: 1px; }
+    .badge-unime {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      color: rgba(255,255,255,.85);
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────── */
+    main { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── Section title ────────────────────────────────────────────── */
+    .section-title {
+      font-size: 1rem; font-weight: 700;
+      color: var(--mid);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      padding-left: .25rem;
+      border-left: 4px solid var(--accent);
+      padding-left: .6rem;
+    }
+
+    /* ── KPI Cards ────────────────────────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .kpi {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border-top: 4px solid var(--accent);
+      display: flex; flex-direction: column; gap: .4rem;
+    }
+    .kpi.ok     { border-top-color: var(--ok);     }
+    .kpi.tamper { border-top-color: var(--tamper);  }
+    .kpi.fake   { border-top-color: var(--fake);    }
+    .kpi.replay { border-top-color: var(--replay);  }
+    .kpi.total  { border-top-color: var(--accent);  }
+
+    .kpi .num {
+      font-size: 2.2rem; font-weight: 800; line-height: 1;
+    }
+    .kpi.ok     .num { color: var(--ok);    }
+    .kpi.tamper .num { color: var(--tamper);}
+    .kpi.fake   .num { color: var(--fake);  }
+    .kpi.replay .num { color: var(--replay);}
+    .kpi.total  .num { color: var(--accent);}
+
+    .kpi .label { font-size: .8rem; color: var(--mid); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .kpi .sub   { font-size: .72rem; color: #aab7b8; }
+
+    /* ── Two-column content area ──────────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    @media(max-width:860px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .card-title {
+      font-size: .85rem; font-weight: 700;
+      color: var(--mid); text-transform: uppercase;
+      letter-spacing: .8px; margin-bottom: 1.1rem;
+    }
+
+    /* ── Attack cards ─────────────────────────────────────────────── */
+    .attack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .attack-card {
+      border-radius: 14px; padding: 1.25rem 1.5rem;
+      background: var(--card);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border-left: 5px solid;
+      position: relative; overflow: hidden;
+    }
+    .attack-card.fabrication { border-left-color: var(--fake); }
+    .attack-card.modification{ border-left-color: var(--tamper); }
+    .attack-card.replay      { border-left-color: var(--replay); }
+
+    .attack-card .tag {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700;
+      padding: .15rem .55rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      margin-bottom: .6rem;
+    }
+    .fabrication .tag  { background: var(--fake-bg);   color: var(--fake);   }
+    .modification .tag { background: var(--tamper-bg); color: var(--tamper); }
+    .replay .tag       { background: var(--replay-bg); color: var(--replay); }
+
+    .attack-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .attack-card p  { font-size: .83rem; color: var(--mid); line-height: 1.5; }
+    .attack-card .detected-by {
+      margin-top: .8rem; font-size: .75rem; font-weight: 700;
+      color: var(--ok);
+    }
+
+    /* ── Data flow steps ──────────────────────────────────────────── */
+    .flow-steps {
+      display: flex; flex-direction: column; gap: .6rem;
+    }
+    .flow-step {
+      display: flex; align-items: flex-start; gap: .85rem;
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      background: var(--light);
+      position: relative;
+    }
+    .step-num {
+      width: 28px; height: 28px; min-width: 28px;
+      border-radius: 50%;
+      background: var(--accent); color: white;
+      font-size: .78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body .step-title { font-size: .88rem; font-weight: 700; }
+    .step-body .step-desc  { font-size: .78rem; color: var(--mid); margin-top: .15rem; }
+    .step-body .step-tool  {
+      display: inline-block; margin-top: .3rem;
+      font-size: .7rem; font-weight: 700;
+      padding: .1rem .45rem; border-radius: 4px;
+      background: #d6eaf8; color: #1a5276;
+    }
+
+    /* ── Transaction table ────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: .82rem;
+    }
+    thead th {
+      background: #f0f3f4; color: var(--mid);
+      font-weight: 700; text-transform: uppercase;
+      font-size: .7rem; letter-spacing: .5px;
+      padding: .7rem 1rem; text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody td { padding: .65rem 1rem; }
+    tbody td.tx-id { font-family: monospace; font-size: .78rem; color: var(--mid); }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .2rem .65rem;
+      border-radius: 20px;
+      font-size: .75rem; font-weight: 700;
+      white-space: nowrap;
+    }
+    .pill.ok     { background: var(--ok-bg);     color: var(--ok);     }
+    .pill.tamper { background: var(--tamper-bg); color: var(--tamper); }
+    .pill.fake   { background: var(--fake-bg);   color: var(--fake);   }
+    .pill.replay { background: var(--replay-bg); color: var(--replay); }
+
+    .check { color: var(--ok); font-size: .85rem; }
+    .cross { color: var(--tamper); font-size: .85rem; }
+
+    /* ── Filter bar ───────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex; gap: .5rem; flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .filter-btn {
+      padding: .35rem .85rem;
+      border-radius: 20px; border: 2px solid var(--border);
+      background: white; font-size: .78rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; color: var(--mid);
+    }
+    .filter-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* ── Tools legend ─────────────────────────────────────────────── */
+    .tools-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
+    .tool-item {
+      padding: .85rem 1rem;
+      border-radius: 10px;
+      background: var(--light);
+      border-left: 4px solid;
+    }
+    .tool-item.sig      { border-color: #27ae60; }
+    .tool-item.cert     { border-color: #2980b9; }
+    .tool-item.enc      { border-color: #e67e22; }
+    .tool-item.jwt      { border-color: #8e44ad; }
+    .tool-item .t-name  { font-size: .82rem; font-weight: 700; margin-bottom: .25rem; }
+    .tool-item .t-desc  { font-size: .75rem; color: var(--mid); line-height: 1.45; }
+    .tool-item .t-goal  { font-size: .7rem; font-weight: 700; margin-top: .35rem; }
+    .tool-item.sig  .t-goal { color: #27ae60; }
+    .tool-item.cert .t-goal { color: #2980b9; }
+    .tool-item.enc  .t-goal { color: #e67e22; }
+    .tool-item.jwt  .t-goal { color: #8e44ad; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .78rem;
+      color: #aab7b8;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────── -->
+<header>
+  <div class="brand">
+    <div class="icon">🔐</div>
+    <div>
+      <h1>Fake Data Prevention Dashboard</h1>
+      <p>System Security Project — Conventional Cryptotools</p>
+    </div>
+  </div>
+  <span class="badge-unime">UniMe — Data Analysis</span>
+</header>
+
+<main>
+
+  <!-- ── KPI CARDS ──────────────────────────────────────────────────── -->
+  <p class="section-title">Verification Results</p>
+  <div class="kpi-grid">
+    <div class="kpi total">
+      <span class="num" id="kpi-total">—</span>
+      <span class="label">Total Rows</span>
+      <span class="sub">Verified in pipeline</span>
+    </div>
+    <div class="kpi ok">
+      <span class="num" id="kpi-valid">—</span>
+      <span class="label">Valid</span>
+      <span class="sub">Authenticated &amp; intact</span>
+    </div>
+    <div class="kpi tamper">
+      <span class="num" id="kpi-mod">—</span>
+      <span class="label">Modification</span>
+      <span class="sub">Data tampered (hash fail)</span>
+    </div>
+    <div class="kpi fake">
+      <span class="num" id="kpi-fab">—</span>
+      <span class="label">Fabrication</span>
+      <span class="sub">Forged signature / cert</span>
+    </div>
+    <div class="kpi replay">
+      <span class="num" id="kpi-rep">—</span>
+      <span class="label">Replay</span>
+      <span class="sub">Duplicate token injected</span>
+    </div>
+  </div>
+
+  <!-- ── ATTACKS + DATA FLOW ────────────────────────────────────────── -->
+  <div class="two-col">
+
+    <!-- Attacks -->
+    <div>
+      <p class="section-title">Simulated Attacks</p>
+      <div class="attack-grid" style="grid-template-columns:1fr;">
+
+        <div class="attack-card fabrication">
+          <span class="tag">Attack A</span>
+          <h3>Fabrication</h3>
+          <p>Attacker injects a completely new transaction signed with their own private key. The certificate does not match the trusted sender — the public key extracted from the cert fails to verify the JWT RS256 signature.</p>
+          <p class="detected-by">Detected by: Certificate Check + JWT RS256 Verification</p>
+        </div>
+
+        <div class="attack-card modification">
+          <span class="tag">Attack B</span>
+          <h3>Modification</h3>
+          <p>Attacker with DB access flips bytes in the AES-encrypted ciphertext. Decryption succeeds but produces garbage — the SHA-256 digest of the recovered data does not match the digest stored inside the JWT.</p>
+          <p class="detected-by">Detected by: AES Decryption Failure + SHA-256 Digest Mismatch</p>
+        </div>
+
+        <div class="attack-card replay">
+          <span class="tag">Attack C</span>
+          <h3>Replay Attack</h3>
+          <p>Attacker duplicates a legitimately signed row and re-injects it under a new transaction ID. The verifier flags rows marked as duplicates via the DB status tag; in production, JWT <code>jti</code> + <code>exp</code> enforce uniqueness.</p>
+          <p class="detected-by">Detected by: JWT jti + Replay Tag in Database</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Data Flow -->
+    <div>
+      <p class="section-title">Data Flow — Step by Step</p>
+      <div class="card">
+        <p class="card-title">Sender Pipeline</p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <p class="step-title">Load CSV Row</p>
+              <p class="step-desc">Financial transaction data (tx_id, amount, sender, IBAN…)</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <p class="step-title">Message Digest</p>
+              <p class="step-desc">SHA-256 hash of canonical JSON → fingerprint of data</p>
+              <span class="step-tool">Message Digest</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <p class="step-title">Digital Signature</p>
+              <p class="step-desc">RSA-PSS sign the digest with sender's private key</p>
+              <span class="step-tool">Digital Signature</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <p class="step-title">JWT Packaging</p>
+              <p class="step-desc">Wrap data + digest + sig into RS256-signed JWT with iss / exp / jti</p>
+              <span class="step-tool">JWT (RS256)</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <p class="step-title">Hybrid Encryption</p>
+              <p class="step-desc">AES-256-CBC encrypts JWT; RSA-OAEP encrypts the session key</p>
+              <span class="step-tool">Encryption</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="card-title" style="margin-top:1.2rem;">Receiver Pipeline</p>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="step-num">6</div>
+            <div class="step-body">
+              <p class="step-title">Certificate Validation</p>
+              <p class="step-desc">Extract & validate X.509 cert → get trusted public key</p>
+              <span class="step-tool">Certificate</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">7</div>
+            <div class="step-body">
+              <p class="step-title">AES Decrypt</p>
+              <p class="step-desc">Recover JWT string using session key + recipient private key</p>
+              <span class="step-tool">Encryption</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">8</div>
+            <div class="step-body">
+              <p class="step-title">JWT Verify</p>
+              <p class="step-desc">Validate RS256 signature, expiry (exp), token ID (jti)</p>
+              <span class="step-tool">JWT</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">9</div>
+            <div class="step-body">
+              <p class="step-title">Digest Recompute</p>
+              <p class="step-desc">SHA-256(recovered data) must equal stored digest</p>
+              <span class="step-tool">Message Digest</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">10</div>
+            <div class="step-body">
+              <p class="step-title">Signature Verify</p>
+              <p class="step-desc">RSA-PSS verify digest signature → confirms non-repudiation</p>
+              <span class="step-tool">Digital Signature</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.two-col -->
+
+  <!-- ── TOOLS LEGEND ───────────────────────────────────────────────── -->
+  <p class="section-title">Cryptographic Tools Used</p>
+  <div class="card" style="margin-bottom:2rem;">
+    <div class="tools-grid">
+      <div class="tool-item sig">
+        <p class="t-name">🖊 Digital Signature (RSA-PSS)</p>
+        <p class="t-desc">Sender signs the SHA-256 digest with their private key. Receiver uses the public key from the certificate to verify. If tampered, signature is invalid.</p>
+        <p class="t-goal">Prevents: Fabrication + Non-repudiation</p>
+      </div>
+      <div class="tool-item cert">
+        <p class="t-name">📜 X.509 Certificate (PKI)</p>
+        <p class="t-desc">Binds the sender's identity to their public key. The receiver validates the certificate before trusting the embedded public key. Simulates a real CA chain.</p>
+        <p class="t-goal">Prevents: Identity spoofing</p>
+      </div>
+      <div class="tool-item enc">
+        <p class="t-name">🔒 Hybrid Encryption (AES-256 + RSA-OAEP)</p>
+        <p class="t-desc">AES-256-CBC encrypts the JWT payload for confidentiality. The AES session key is wrapped with RSA-OAEP so only the intended recipient can decrypt it.</p>
+        <p class="t-goal">Prevents: Eavesdropping</p>
+      </div>
+      <div class="tool-item jwt">
+        <p class="t-name">🎫 JWT — RS256 (JSON Web Token)</p>
+        <p class="t-desc">Standard container for claims (iss, sub, exp, jti, data, digest, rsa_signature). RS256 adds a second signature layer; <code>exp</code> + <code>jti</code> prevent Replay attacks.</p>
+        <p class="t-goal">Prevents: Replay + Tampering</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TRANSACTION TABLE ──────────────────────────────────────────── -->
+  <p class="section-title">Transaction Log</p>
+  <div class="card">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterTable('all',this)">All</button>
+      <button class="filter-btn" onclick="filterTable('ok',this)">Valid only</button>
+      <button class="filter-btn" onclick="filterTable('tamper',this)">Modification</button>
+      <button class="filter-btn" onclick="filterTable('fake',this)">Fabrication</button>
+      <button class="filter-btn" onclick="filterTable('replay',this)">Replay</button>
+    </div>
+    <div class="table-wrap">
+      <table id="tx-table">
+        <thead>
+          <tr>
+            <th>TX ID</th>
+            <th>Status</th>
+            <th>Sender</th>
+            <th>Amount (EUR)</th>
+            <th>Cert</th>
+            <th>JWT</th>
+            <th>Digest</th>
+            <th>Sig</th>
+          </tr>
+        </thead>
+        <tbody id="tx-body">
+          <tr><td colspan="8" style="text-align:center;padding:2rem;color:#aaa;">Loading results…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Fake Data Prevention with Conventional Cryptotools &nbsp;|&nbsp;
+  System Security Project &nbsp;|&nbsp; Università degli Studi di Messina
+</footer>
+
+<!-- ── JAVASCRIPT ─────────────────────────────────────────────────────── -->
+<script>
+/* ── Load results.json (same folder) ──────────────────────────────────── */
+let allRows = [];
+
+async function loadResults() {
+  try {
+    const res  = await fetch('results.json');
+    const data = await res.json();
+    allRows = data.results || [];
+    renderKPIs(data);
+    renderTable(allRows);
+  } catch(e) {
+    // Demo data if results.json not found
+    allRows = buildDemoData();
+    renderKPIs(calcKPIs(allRows));
+    renderTable(allRows);
+  }
+}
+
+function buildDemoData() {
+  const rows = [];
+  for (let i = 1; i <= 100; i++) {
+    rows.push({
+      tx_id: `TXN-2024-${String(i).padStart(4,'0')}`,
+      status: "✅ VALID",
+      sender: "Alice Rossi",
+      amount: (Math.random()*4000+50).toFixed(2),
+      cert_valid: true, jwt_valid: true, digest_valid: true, sig_valid: true,
+      error: null
+    });
+  }
+  // Inject attacks
+  rows[10].status = "❌ MODIFICATION DETECTED";
+  rows[10].digest_valid = false; rows[10].sig_valid = false;
+  rows[10].error = "Digest mismatch";
+  rows.push({
+    tx_id: "TXN-FAKE-9999", status: "❌ FABRICATION DETECTED",
+    sender: "Attacker", amount: "99999.99",
+    cert_valid: false, jwt_valid: false, digest_valid: false, sig_valid: false,
+    error: "Cert mismatch"
+  });
+  rows.push({
+    tx_id: "TXN-2024-0072-REPLAY", status: "❌ REPLAY ATTACK DETECTED",
+    sender: "Giulia Ferrari", amount: "1234.56",
+    cert_valid: true, jwt_valid: true, digest_valid: true, sig_valid: false,
+    error: "Replay tag"
+  });
+  return rows;
+}
+
+function calcKPIs(rows) {
+  return {
+    total: rows.length,
+    valid: rows.filter(r=>r.status.includes("VALID")).length,
+    modification: rows.filter(r=>r.status.includes("MODIFICATION")).length,
+    fabrication: rows.filter(r=>r.status.includes("FABRICATION")).length,
+    replay: rows.filter(r=>r.status.includes("REPLAY")).length,
+  };
+}
+
+function renderKPIs(data) {
+  document.getElementById('kpi-total').textContent = data.total || 0;
+  document.getElementById('kpi-valid').textContent = data.valid || 0;
+  document.getElementById('kpi-mod').textContent   = data.modification || 0;
+  document.getElementById('kpi-fab').textContent   = data.fabrication || 0;
+  document.getElementById('kpi-rep').textContent   = data.replay || 0;
+}
+
+function statusClass(s) {
+  if (s.includes("VALID"))        return "ok";
+  if (s.includes("MODIFICATION")) return "tamper";
+  if (s.includes("FABRICATION"))  return "fake";
+  if (s.includes("REPLAY"))       return "replay";
+  return "fake";
+}
+
+function statusLabel(s) {
+  if (s.includes("VALID"))        return "Valid";
+  if (s.includes("MODIFICATION")) return "Modification";
+  if (s.includes("FABRICATION"))  return "Fabrication";
+  if (s.includes("REPLAY"))       return "Replay";
+  return "Unknown";
+}
+
+function boolIcon(v) {
+  return v ? '<span class="check">&#10003;</span>' : '<span class="cross">&#10007;</span>';
+}
+
+function renderTable(rows) {
+  const tbody = document.getElementById('tx-body');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:1.5rem;color:#aaa;">No rows match filter.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
+    const cls = statusClass(r.status);
+    const amount = r.amount ? parseFloat(r.amount_eur || r.amount).toLocaleString('it-IT', {minimumFractionDigits:2}) : 'N/A';
+    return `<tr data-class="${cls}">
+      <td class="tx-id">${r.tx_id}</td>
+      <td><span class="pill ${cls}">${statusLabel(r.status)}</span></td>
+      <td>${r.sender || 'N/A'}</td>
+      <td>${amount}</td>
+      <td style="text-align:center">${boolIcon(r.cert_valid)}</td>
+      <td style="text-align:center">${boolIcon(r.jwt_valid)}</td>
+      <td style="text-align:center">${boolIcon(r.digest_valid)}</td>
+      <td style="text-align:center">${boolIcon(r.sig_valid)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(cls, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (cls === 'all') { renderTable(allRows); return; }
+  renderTable(allRows.filter(r => statusClass(r.status) === cls));
+}
+
+loadResults();
+</script>
+</body>
+</html>

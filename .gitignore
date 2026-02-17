@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Keys — NEVER commit private keys
+keys/
+*.pem
+
+# Generated output (large files)
+output/*.db
+output/*.png
+
+# Keep results.json for dashboard demo
+!output/results.json
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
