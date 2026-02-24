@@ -65,6 +65,12 @@ pip install -r requirements.txt -r api/requirements.txt
 python3 -m unittest discover -s tests -v
 ```
 
+Or with make:
+
+```bash
+make test
+```
+
 ## Run Core Pipeline
 
 ```bash
@@ -86,6 +92,12 @@ If port `5000` is busy:
 
 ```bash
 PORT=5050 python3 api/app.py
+```
+
+Or with make:
+
+```bash
+make api
 ```
 
 ## API Endpoints
