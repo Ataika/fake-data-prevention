@@ -11,20 +11,37 @@ import os
 random.seed(42)
 
 SENDERS = [
-    "Alice Rossi", "Marco Bianchi", "Giulia Ferrari",
-    "Luca Esposito", "Sara Conti", "Ahmed Malik",
-    "Chen Wei", "Fatima Al-Sayed", "Ivan Petrov", "Ana Garcia"
+    "Alice Rossi", "Marco Bianchi", "Giulia Ferrari", "Luca Esposito", "Sara Conti",
+    "Ahmed Malik", "Chen Wei", "Fatima Al-Sayed", "Ivan Petrov", "Ana Garcia",
+    "Paolo Ricci", "Francesca Moretti", "Matteo Romano", "Elena Greco", "Davide Rinaldi",
+    "Noemi Costa", "Riccardo Gallo", "Yasmine Haddad", "Omar Nasser", "Nina Volkova",
+    "Thomas Muller", "Emma Dubois", "Carlos Mendes", "Marta Kowalska", "Sofia Marino",
+    "Giovanni Vitale", "Bianca Leone", "Stefano De Luca", "Claudia Serra", "Roberto Fontana",
+    "Arianna Bellini", "Andrea Colombo", "Salvatore Mancini", "Chiara Giordano", "Gabriele Longo",
+    "Laura Santoro", "Federico Neri", "Valentina Ferrara", "Dario Palumbo", "Beatrice Orlando"
 ]
 
 RECIPIENTS = [
-    "UniMe Fees Office", "Enel Energia", "Amazon IT",
-    "Lidl Messina", "Trenitalia", "Vodafone IT",
-    "PayPal Europe", "Netflix IT", "Rent — Via Roma 14", "Insurance Plus"
+    "UniMe Fees Office", "Enel Energia", "Amazon IT", "Lidl Messina", "Trenitalia",
+    "Vodafone IT", "PayPal Europe", "Netflix IT", "Insurance Plus", "Comune di Messina",
+    "Fastweb Mobile", "TIM Servizi", "WindTre Digital", "Iliad Italia", "Apple Services",
+    "Google Cloud Italy", "Microsoft 365", "Adobe Europe", "Booking Italia", "Ryanair",
+    "EasyJet", "IKEA Italia", "Decathlon Messina", "Carrefour Sicilia", "Esselunga Online",
+    "Sicily Gas", "Acqua e Reti", "Rent Via Roma 14", "Rent Via Garibaldi 22", "Rent Viale Europa 8",
+    "Gym Pro Club", "Hospital Service", "Pharmacy Central", "University Library", "Parking Messina",
+    "Auto Insurance Prime", "Moto Insurance Hub", "Cloud VPS Host", "Domain Registry EU", "Security Academy"
 ]
 
-CATEGORIES = ["Utilities", "Education", "Retail", "Transport", "Rent", "Telecom", "Streaming", "Insurance"]
+CATEGORIES = [
+    "Utilities", "Education", "Retail", "Transport", "Rent", "Telecom", "Streaming", "Insurance",
+    "Healthcare", "Groceries", "Travel", "Subscriptions", "Taxes", "Parking", "Cloud Services", "Tuition"
+]
 
-BANKS = ["Unicredit", "Intesa Sanpaolo", "BNL", "BPER", "Fineco", "ING Direct"]
+BANKS = [
+    "Unicredit", "Intesa Sanpaolo", "BNL", "BPER", "Fineco", "ING Direct",
+    "Banco BPM", "Monte dei Paschi", "Credem", "Mediobanca Premier", "Widiba",
+    "N26", "Revolut Bank", "Poste Italiane", "CheBanca", "Banca Sella"
+]
 
 def generate_transactions(n=100):
     transactions = []
@@ -40,7 +57,7 @@ def generate_transactions(n=100):
         )
         amount = round(random.uniform(5.00, 4500.00), 2)
         sender = random.choice(SENDERS)
-        recipient = random.choice([r for r in RECIPIENTS])
+        recipient = random.choice(RECIPIENTS)
 
         tx = {
             "tx_id":        f"TXN-2024-{str(i+1).zfill(4)}",

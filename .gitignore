@@ -21,3 +21,18 @@ output/*.png
 .DS_Store
 Thumbs.db
 *.swp
+
+# IDE / local project files
+.idea/
+
+# Local artifacts not for repository
+securechat.pdf
+project.zip
+fake-data-prevention-STUDENT.zip
+fake-data-prevention-student/
+
+# Internal prep notes (keep local)
+docs/DEFENSE_MASTER_GUIDE.md
+docs/EXAM_PREP.md
+docs/TESTING_RUNBOOK.md
+docs/SUBMISSION_EMAIL_TEMPLATE.md

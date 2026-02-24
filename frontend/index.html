@@ -402,6 +402,8 @@
   <button class="tab active" data-n="01" onclick="switchTab('overview',this)">Overview</button>
   <button class="tab" data-n="02" onclick="switchTab('log',this)">Transaction Log</button>
   <button class="tab" data-n="03" onclick="switchTab('simulator',this)">Attack Simulator</button>
+  <button class="tab" data-n="04" onclick="switchTab('merkle',this)">Merkle Integrity</button>
+  <button class="tab" data-n="05" onclick="switchTab('multiparty',this)">Multi-Party Chain</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -640,6 +642,85 @@
 
 </div><!-- /panel-simulator -->
 
+<!-- ═══════════════════════════════════════════════════
+     PANEL 4 — MERKLE
+═══════════════════════════════════════════════════ -->
+<div id="panel-merkle" class="panel">
+  <section class="log-hero">
+    <div>
+      <p class="eyebrow">Panel 04 · Merkle Integrity</p>
+      <h1 style="font-size:clamp(2.5rem,4vw,4rem)">MERKLE<br><span>ROOT</span><br>CHECK.</h1>
+    </div>
+    <p class="log-desc">Merkle root is computed from transaction digests currently stored in API DB. Any change in any digest will produce a different root.</p>
+  </section>
+
+  <section class="tools-section">
+    <div class="section-label"><span>Current Merkle State</span><span>API /api/merkle/root</span></div>
+    <div style="display:flex;gap:.8rem;align-items:center;margin-bottom:1.2rem">
+      <button class="stress-btn" onclick="refreshMerkle()">[ REFRESH ROOT ]</button>
+      <span class="row-count" id="merkle-status">// waiting...</span>
+    </div>
+    <div class="fields-grid">
+      <div class="field-card">
+        <p class="field-name">leaf_count</p>
+        <span class="field-type">integer</span>
+        <p class="field-desc" id="merkle-leaf">—</p>
+      </div>
+      <div class="field-card">
+        <p class="field-name">generated_at</p>
+        <span class="field-type">timestamp</span>
+        <p class="field-desc" id="merkle-time">—</p>
+      </div>
+      <div class="field-card">
+        <p class="field-name">merkle_root</p>
+        <span class="field-type">sha256</span>
+        <p class="field-desc" id="merkle-root" style="word-break:break-all">—</p>
+      </div>
+    </div>
+  </section>
+</div><!-- /panel-merkle -->
+
+<!-- ═══════════════════════════════════════════════════
+     PANEL 5 — MULTI-PARTY
+═══════════════════════════════════════════════════ -->
+<div id="panel-multiparty" class="panel">
+  <section class="sim-hero">
+    <div>
+      <p class="eyebrow">Panel 05 · Multi-Party Chain</p>
+      <h1 style="font-size:clamp(2.3rem,4vw,3.8rem)">ALICE<br>→ BOB<br>→ <span>CHARLIE</span></h1>
+    </div>
+    <div>
+      <p class="sim-desc">Initialize a chain for one transaction and append signatures from multiple parties. Backend validates previous signatures before allowing a new one.</p>
+      <div class="step-pills">
+        <span class="step-pill">01 · Init chain</span>
+        <span class="step-pill">02 · Add Bob</span>
+        <span class="step-pill">03 · Add Charlie</span>
+        <span class="step-pill">04 · Verify chain</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="upload-section">
+    <div class="section-label"><span>Chain Controls</span><span>API /api/multiparty/*</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <input class="search-input" id="mp-txid" placeholder="TX ID (e.g. TXN-CHAIN-001)" style="width:100%"/>
+      <input class="search-input" id="mp-amount" placeholder="Amount EUR (e.g. 100.50)" style="width:100%"/>
+      <input class="search-input" id="mp-sender" placeholder="Sender (e.g. Alice Rossi)" style="width:100%"/>
+      <input class="search-input" id="mp-recipient" placeholder="Recipient (e.g. UniMe Fees)" style="width:100%"/>
+    </div>
+    <div class="btn-group" style="margin-top:1rem">
+      <button class="stress-btn" onclick="mpInit()">[ INIT (ALICE) ]</button>
+      <button class="stress-btn" onclick="mpSign('Bob')">[ SIGN BOB ]</button>
+      <button class="stress-btn" onclick="mpSign('Charlie')">[ SIGN CHARLIE ]</button>
+      <button class="stress-btn" onclick="mpLoad()">[ LOAD STATUS ]</button>
+    </div>
+    <p class="row-count" id="mp-status" style="margin-top:.8rem">// waiting...</p>
+    <pre id="mp-json" style="margin-top:1rem;background:#111;border:1px solid #222;padding:1rem;color:#e0e0e0;max-height:420px;overflow:auto;font-family:var(--mono);font-size:.64rem">{
+  "status": "idle"
+}</pre>
+  </section>
+</div><!-- /panel-multiparty -->
+
 <footer>
   <p class="foot-l">FAKE DATA PREVENTION</p>
   <p class="foot-r">System Security · Università degli Studi di Messina · 2025/2026</p>
@@ -654,6 +735,27 @@ function switchTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   btn.classList.add('active');
+}
+
+const API_BASE = (window.FDP_API_BASE || localStorage.getItem('FDP_API_BASE') || 'http://localhost:5000').replace(/\/$/,'');
+function apiUrl(path){ return `${API_BASE}${path}`; }
+async function apiJson(path, options){
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try{
+    const res = await fetch(apiUrl(path), {...(options||{}), signal: controller.signal});
+    if(!res.ok){
+      let detail = `${res.status}`;
+      try{
+        const body = await res.json();
+        detail = body.error || detail;
+      }catch(e){}
+      throw new Error(detail);
+    }
+    return await res.json();
+  }finally{
+    clearTimeout(timeout);
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -673,21 +775,41 @@ function switchTab(id,btn){
 })();
 
 /* ═══════════════════════════════════════════
-   OVERVIEW — load results.json
+   OVERVIEW — load API first, fallback to local results.json
 ═══════════════════════════════════════════ */
 let overviewData=[];
 async function loadOverview(){
   try{
-    const r=await fetch('results.json');
-    if(!r.ok)throw new Error('no json');
-    const d=await r.json();
-    overviewData=d.results||[];
+    const verified = await apiJson('/api/transactions/verified?limit=200');
+    overviewData = verified.transactions || [];
+    const d = deriveKpisFromRows(overviewData);
     renderKPIs(d);
+    document.querySelector('.status-dot').textContent = `API ONLINE @ ${API_BASE}`;
+    await refreshMerkle();
   }catch(e){
-    const d=demoResults();
-    overviewData=d.results;
-    renderKPIs(d);
+    try{
+      const r=await fetch('results.json');
+      if(!r.ok)throw new Error('no json');
+      const d=await r.json();
+      overviewData=d.results||[];
+      renderKPIs(d);
+      document.querySelector('.status-dot').textContent='OFFLINE MODE (results.json)';
+    }catch(err){
+      const d=demoResults();
+      overviewData=d.results;
+      renderKPIs(d);
+      document.querySelector('.status-dot').textContent='DEMO MODE';
+    }
   }
+}
+
+function deriveKpisFromRows(rows){
+  const total = rows.length;
+  const valid = rows.filter(r => (r.ver_status||r.status||'').includes('VALID')).length;
+  const modification = rows.filter(r => (r.ver_status||r.status||'').includes('MOD')).length;
+  const fabrication = rows.filter(r => (r.ver_status||r.status||'').includes('FAB')).length;
+  const replay = rows.filter(r => (r.ver_status||r.status||'').includes('REPLAY')).length;
+  return {total, valid, modification, fabrication, replay, results: rows};
 }
 
 function demoResults(){
@@ -718,12 +840,13 @@ function demoResults(){
 
 function renderKPIs(d){
   const t=d.total||0,v=d.valid||0,th=t-v;
+  const score=t?Math.round((v/t)*100):0;
   document.getElementById('kpi-total').textContent=t;
   document.getElementById('kpi-valid').textContent=v;
   document.getElementById('kpi-mod').textContent=d.modification||0;
   document.getElementById('kpi-fab').textContent=d.fabrication||0;
   document.getElementById('kpi-rep').textContent=d.replay||0;
-  document.getElementById('ring-pct').textContent=th>0?'100%':'—';
+  document.getElementById('ring-pct').textContent=`${score}%`;
   document.getElementById('s-total').textContent=t;
   document.getElementById('s-valid').textContent=v;
   document.getElementById('s-threats').textContent=th;
@@ -1118,6 +1241,103 @@ function log(type,msg){
 function clearLog(){document.getElementById('live-log').innerHTML='<span class="log-info">// Log cleared</span>';}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
+/* ═══════════════════════════════════════════
+   MERKLE PANEL
+═══════════════════════════════════════════ */
+async function refreshMerkle(){
+  const status = document.getElementById('merkle-status');
+  const rootEl = document.getElementById('merkle-root');
+  const leafEl = document.getElementById('merkle-leaf');
+  const timeEl = document.getElementById('merkle-time');
+  if(!status || !rootEl) return;
+  status.textContent = '// loading...';
+  try{
+    const data = await apiJson('/api/merkle/root?limit=200');
+    rootEl.textContent = data.merkle_root || '—';
+    leafEl.textContent = String(data.leaf_count || 0);
+    timeEl.textContent = data.generated_at || '—';
+    status.textContent = '// synced with backend';
+  }catch(e){
+    status.textContent = `// error: ${e.message}`;
+    rootEl.textContent = 'unavailable';
+    leafEl.textContent = '—';
+    timeEl.textContent = '—';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MULTI-PARTY PANEL
+═══════════════════════════════════════════ */
+function mpTxPayload(){
+  return {
+    tx_id: document.getElementById('mp-txid').value.trim(),
+    sender: document.getElementById('mp-sender').value.trim() || 'Alice Rossi',
+    recipient: document.getElementById('mp-recipient').value.trim() || 'UniMe Fees',
+    amount_eur: parseFloat(document.getElementById('mp-amount').value || '100.0'),
+    timestamp: new Date().toISOString(),
+    currency: 'EUR'
+  };
+}
+function mpRender(data){
+  const status = document.getElementById('mp-status');
+  const out = document.getElementById('mp-json');
+  if(status) status.textContent = '// chain updated';
+  if(out) out.textContent = JSON.stringify(data, null, 2);
+}
+function mpCurrentTxId(){
+  return document.getElementById('mp-txid').value.trim();
+}
+async function mpInit(){
+  const payload = mpTxPayload();
+  if(!payload.tx_id){
+    document.getElementById('mp-status').textContent='// tx_id is required';
+    return;
+  }
+  document.getElementById('mp-status').textContent='// initializing...';
+  try{
+    const data = await apiJson('/api/multiparty/init', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({transaction: payload, initiator: 'Alice'})
+    });
+    mpRender(data);
+  }catch(e){
+    document.getElementById('mp-status').textContent=`// error: ${e.message}`;
+  }
+}
+async function mpSign(party){
+  const txid = mpCurrentTxId();
+  if(!txid){
+    document.getElementById('mp-status').textContent='// set tx_id first';
+    return;
+  }
+  document.getElementById('mp-status').textContent=`// signing as ${party}...`;
+  try{
+    const data = await apiJson(`/api/multiparty/sign/${encodeURIComponent(txid)}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({party})
+    });
+    mpRender(data);
+  }catch(e){
+    document.getElementById('mp-status').textContent=`// error: ${e.message}`;
+  }
+}
+async function mpLoad(){
+  const txid = mpCurrentTxId();
+  if(!txid){
+    document.getElementById('mp-status').textContent='// set tx_id first';
+    return;
+  }
+  document.getElementById('mp-status').textContent='// loading status...';
+  try{
+    const data = await apiJson(`/api/multiparty/${encodeURIComponent(txid)}`);
+    mpRender(data);
+  }catch(e){
+    document.getElementById('mp-status').textContent=`// error: ${e.message}`;
+  }
+}
+
 // Drag & drop
 const dz=document.getElementById('drop-zone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
@@ -1132,6 +1352,7 @@ dz.addEventListener('drop',e=>{
 ═══════════════════════════════════════════ */
 initKey().then(()=>{
   loadOverview().then(()=>{logRows=overviewData;renderLog();});
+  refreshMerkle();
 });
 </script>
 </body>

@@ -3,3 +3,5 @@ PyJWT>=2.8.0
 matplotlib>=3.8.0
 pandas>=2.1.0
 reportlab>=4.0.0
+Flask>=3.0.0
+flask-cors>=4.0.0
