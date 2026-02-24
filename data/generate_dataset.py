@@ -7,6 +7,7 @@ import csv
 import random
 import datetime
 import os
+import argparse
 
 random.seed(42)
 
@@ -81,8 +82,14 @@ def generate_transactions(n=100):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate synthetic transaction dataset.")
+    parser.add_argument("--count", type=int, default=100, help="Number of rows to generate")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
+    args = parser.parse_args()
+
+    random.seed(args.seed)
     out_path = os.path.join(os.path.dirname(__file__), "transactions.csv")
-    txns = generate_transactions(100)
+    txns = generate_transactions(args.count)
 
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=txns[0].keys())
