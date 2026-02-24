@@ -120,3 +120,12 @@ If API runs on non-default port (for example `5050`), set in browser console:
 localStorage.setItem('FDP_API_BASE', 'http://localhost:5050');
 location.reload();
 ```
+
+## Quick Demo Flow (for presentation)
+
+1. Start API: `python3 api/app.py` (or `PORT=5050 ...`).
+2. Open dashboard and check Overview + Transaction Log.
+3. Use `/api/sign` and `/api/verify` once for valid case.
+4. Repeat `/api/verify` with changed `amount_eur` to show modification detection.
+5. Open Merkle tab and refresh root.
+6. Open Multi-Party tab: init Alice, then Bob and Charlie signatures.
