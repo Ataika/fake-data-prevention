@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 crypto_service.py
-Логика хэширования/подписи и валидации payload для Flask API.
+Hashing, signing, and payload validation helpers for Flask API.
 """
 
 import hashlib
@@ -11,8 +11,6 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-# В production задавать через env:
-# export FDP_HMAC_SECRET="very-strong-secret"
 DEFAULT_SECRET = "UniMe-SecSec-2024-FDP"
 SECRET_KEY = os.getenv("FDP_HMAC_SECRET", DEFAULT_SECRET)
 
@@ -27,7 +25,7 @@ REQUIRED_TX_FIELDS = [
 
 
 def validate_transaction_payload(tx_data):
-    """Проверяет базовую структуру транзакции."""
+    """Validate required transaction fields and basic value types."""
     if not isinstance(tx_data, dict):
         return False, "Transaction payload must be JSON object"
 
@@ -44,34 +42,29 @@ def validate_transaction_payload(tx_data):
 
 
 def canonical_json(data):
-    """
-    Canonical JSON для детерминированного хэша.
-    Убираем служебные поля вида _internal.
-    """
+    """Build deterministic JSON string for hashing."""
     clean_data = {k: v for k, v in data.items() if not k.startswith("_")}
     return json.dumps(clean_data, sort_keys=True, separators=(",", ":"))
 
 
 def compute_sha256(text):
-    """SHA-256 digest для строки."""
+    """Return SHA-256 hex digest for input string."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def hmac_sign(message, key=SECRET_KEY):
-    """HMAC-SHA256 подпись."""
+    """Return HMAC-SHA256 hex signature."""
     return hmac.new(key.encode(), message.encode(), hashlib.sha256).hexdigest()
 
 
 def verify_hmac(message, signature, key=SECRET_KEY):
-    """Проверка HMAC подписи с compare_digest."""
+    """Verify HMAC signature with compare_digest."""
     expected = hmac_sign(message, key)
     return hmac.compare_digest(expected, signature)
 
 
 def create_jwt_payload(tx_data, digest, signature):
-    """
-    Упрощённый JWT-like payload (без подписи самого JWT).
-    """
+    """Create compact JWT-like payload structure."""
     now = datetime.utcnow()
     return {
         "iss": "BankSecureGateway",
@@ -83,4 +76,3 @@ def create_jwt_payload(tx_data, digest, signature):
         "digest": digest,
         "signature": signature,
     }
-

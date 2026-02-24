@@ -13,7 +13,7 @@ from matplotlib.gridspec import GridSpec
 import matplotlib.ticker as mticker
 
 
-# ── Colour palette ───────────────────────────────────────────────────────────
+# Colour palette
 C_OK      = "#2ecc71"
 C_TAMPER  = "#e74c3c"
 C_FAKE    = "#e67e22"
@@ -31,19 +31,17 @@ def _style_ax(ax, title: str):
     ax.set_title(title, fontweight="bold", color=C_DARK, fontsize=12, pad=10)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Chart 1 — Verification Results Overview (bar chart)
-# ─────────────────────────────────────────────────────────────────────────────
+# Chart 1: Verification results overview (bar chart)
 
 def plot_verification_overview(results: list, out_path: str):
     from collections import Counter
 
     status_map = {
-        "✅ VALID":                     ("Valid",        C_OK),
-        "❌ MODIFICATION DETECTED":     ("Modification", C_TAMPER),
-        "❌ FABRICATION DETECTED":      ("Fabrication",  C_FAKE),
-        "❌ REPLAY ATTACK DETECTED":    ("Replay",       C_REPLAY),
-        "❌ INVALID CERTIFICATE":       ("Invalid Cert", C_CERT),
+        "[OK] VALID":                     ("Valid",        C_OK),
+        "[FAIL] MODIFICATION DETECTED":     ("Modification", C_TAMPER),
+        "[FAIL] FABRICATION DETECTED":      ("Fabrication",  C_FAKE),
+        "[FAIL] REPLAY ATTACK DETECTED":    ("Replay",       C_REPLAY),
+        "[FAIL] INVALID CERTIFICATE":       ("Invalid Cert", C_CERT),
     }
 
     counts  = Counter(r["status"] for r in results)
@@ -77,15 +75,13 @@ def plot_verification_overview(results: list, out_path: str):
     print(f"[chart] {out_path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Chart 2 — Attack Detection Breakdown (pie / donut)
-# ─────────────────────────────────────────────────────────────────────────────
+# Chart 2: Attack detection breakdown (pie chart)
 
 def plot_attack_pie(results: list, out_path: str):
     from collections import Counter
     counts = Counter(r["status"] for r in results)
 
-    valid_n = counts.get("✅ VALID", 0)
+    valid_n = counts.get("[OK] VALID", 0)
     attack_n = len(results) - valid_n
 
     sizes   = [valid_n, attack_n]
@@ -112,9 +108,7 @@ def plot_attack_pie(results: list, out_path: str):
     print(f"[chart] {out_path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Chart 3 — Data Flow Architecture diagram
-# ─────────────────────────────────────────────────────────────────────────────
+# Chart 3: Data flow architecture diagram
 
 def plot_data_flow(out_path: str):
     fig, ax = plt.subplots(figsize=(14, 7), facecolor="white")
@@ -125,7 +119,7 @@ def plot_data_flow(out_path: str):
     ax.set_title("Data Flow: Fake Data Prevention Pipeline",
                  fontsize=15, fontweight="bold", color=C_DARK, pad=12)
 
-    # ── Node definitions: (x, y, label, colour, width, height) ──────────────
+    # Node definitions: (x, y, label, color, width, height)
     nodes = [
         (1.0,  5.5, "CSV\nDataset",         "#dfe6e9",  1.6, 0.8),
         (3.2,  5.5, "SHA-256\nDigest",       "#d5f5e3",  1.6, 0.8),
@@ -139,7 +133,7 @@ def plot_data_flow(out_path: str):
         (7.6,  3.2, "Digest\nRecompute",     "#d5f5e3",  1.6, 0.8),
         (5.4,  3.2, "Sig\nVerify",           "#d5f5e3",  1.6, 0.8),
         (3.2,  3.2, "Certificate\nCheck",    "#fadbd8",  1.6, 0.8),
-        (1.0,  3.2, "✅ VALID\nor ❌ FAKE",  "#eaecee",  1.6, 0.8),
+        (1.0,  3.2, "[OK] VALID\nor [FAIL] FAKE",  "#eaecee",  1.6, 0.8),
     ]
 
     for (x, y, lbl, col, w, h) in nodes:
@@ -152,26 +146,26 @@ def plot_data_flow(out_path: str):
         ax.text(x, y, lbl, ha="center", va="center",
                 fontsize=9, fontweight="bold", color=C_DARK, linespacing=1.4)
 
-    # ── Arrows (sender top row) ──────────────────────────────────────────────
+    # Arrows for sender top row
     top_xs = [1.0, 3.2, 5.4, 7.6, 9.8, 12.0]
     for i in range(len(top_xs) - 1):
         ax.annotate("", xy=(top_xs[i+1] - 0.82, 5.5),
                     xytext=(top_xs[i] + 0.82, 5.5),
                     arrowprops=dict(arrowstyle="-|>", color=C_DARK, lw=1.6))
 
-    # ── Arrow down (DB → decrypt) ────────────────────────────────────────────
+    # Down arrow from DB to decrypt
     ax.annotate("", xy=(12.0, 3.2 + 0.42),
                 xytext=(12.0, 5.5 - 0.42),
                 arrowprops=dict(arrowstyle="-|>", color=C_DARK, lw=1.6))
 
-    # ── Arrows (receiver bottom row, right→left) ─────────────────────────────
+    # Arrows for receiver bottom row (right to left)
     bot_xs = [12.0, 9.8, 7.6, 5.4, 3.2, 1.0]
     for i in range(len(bot_xs) - 1):
         ax.annotate("", xy=(bot_xs[i+1] + 0.82, 3.2),
                     xytext=(bot_xs[i] - 0.82, 3.2),
                     arrowprops=dict(arrowstyle="-|>", color=C_DARK, lw=1.6))
 
-    # ── Labels ───────────────────────────────────────────────────────────────
+    # Section labels
     ax.text(6.5, 6.6, "SENDER SIDE", fontsize=11, fontweight="bold",
             color="#117a65", ha="center",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#d5f5e3", edgecolor="#117a65"))
@@ -179,7 +173,7 @@ def plot_data_flow(out_path: str):
             color="#7b241c", ha="center",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#fadbd8", edgecolor="#7b241c"))
 
-    # ── Threat labels ─────────────────────────────────────────────────────────
+    # Threat labels
     threat_data = [
         (5.4, 4.35, "Blocks\nFabrication", C_FAKE),
         (7.6, 4.35, "Blocks\nReplay",      C_REPLAY),
@@ -197,9 +191,7 @@ def plot_data_flow(out_path: str):
     print(f"[chart] {out_path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  Chart 4 — Step-by-step verification status grid
-# ─────────────────────────────────────────────────────────────────────────────
+# Chart 4: Step-by-step verification status grid
 
 def plot_verification_steps_heatmap(results: list, out_path: str):
     import numpy as np
@@ -230,13 +222,13 @@ def plot_verification_steps_heatmap(results: list, out_path: str):
     ax.set_xticklabels(steps, fontsize=10, fontweight="bold", color=C_DARK)
     ax.set_yticks(range(len(labels_y)))
     ax.set_yticklabels(labels_y, fontsize=8, color=C_DARK)
-    ax.set_title("Verification Steps — First 20 Rows", fontweight="bold",
+    ax.set_title("Verification Steps - First 20 Rows", fontweight="bold",
                  color=C_DARK, fontsize=12, pad=10)
 
     # Add text annotations
     for i in range(len(sample)):
         for j in range(len(steps)):
-            val = "✓" if matrix[i, j] == 1 else "✗"
+            val = "ok" if matrix[i, j] == 1 else "x"
             ax.text(j, i, val, ha="center", va="center",
                     fontsize=11, color="white", fontweight="bold")
 

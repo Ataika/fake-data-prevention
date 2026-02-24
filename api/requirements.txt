@@ -1,16 +1,6 @@
-# Flask API dependencies
-# Для запуска: pip install -r requirements.txt -r api/requirements.txt
-
 Flask>=3.0.0
 flask-cors>=4.0.0
 gunicorn==22.0.0
 
-# Align with project root requirements
 cryptography>=42.0.0
-
-# Database
-# SQLite идёт из коробки, но для PostgreSQL потом добавим:
-# psycopg2-binary==2.9.9
-
-# Testing (optional)
 pytest==7.4.3

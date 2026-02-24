@@ -12,9 +12,9 @@ Implements:
   - JWT packaging   : RS256 token creation / verification
 
 Security goals addressed:
-  Fabrication  → blocked by Digital Signature (cannot sign without private key)
-  Modification → blocked by Message Digest (any change breaks SHA-256 hash)
-  Replay       → blocked by JWT exp / jti claims
+  Fabrication  blocked by Digital Signature (cannot sign without private key)
+  Modification blocked by Message Digest (any change breaks SHA-256 hash)
+  Replay       blocked by JWT exp / jti claims
 """
 
 import hashlib
@@ -32,17 +32,14 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 import jwt as pyjwt
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  1. KEY GENERATION
-# ─────────────────────────────────────────────────────────────────────────────
+# 1. KEY GENERATION
 
 def generate_rsa_keypair(key_size: int = 2048):
     """
     Generate an RSA key-pair.
 
     Returns:
-        (private_key, public_key) — cryptography.hazmat objects
+        (private_key, public_key) - cryptography.hazmat objects
     """
     private_key = rsa.generate_private_key(
         public_exponent=65537,
@@ -70,18 +67,16 @@ def save_keypair(private_key, path_prefix: str):
     return priv_pem, pub_pem
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  2. X.509 CERTIFICATE  (PKI simulation — in production: issued by a real CA)
-# ─────────────────────────────────────────────────────────────────────────────
+# 2. X.509 CERTIFICATE (PKI simulation)
 
 def create_certificate(private_key, common_name: str, org: str = "UniMe Security Lab"):
     """
-    Create a self-signed X.509 certificate binding identity → public key.
+    Create a self-signed X.509 certificate binding identity to public key.
 
     In a real PKI deployment:
       1. Generate CSR (Certificate Signing Request)
       2. Submit to a Certificate Authority (CA)
-      3. CA verifies identity, signs the cert → trust chain
+      3. CA verifies identity, signs the cert to build trust chain
 
     Here we simulate that with a self-signed cert for demonstration.
 
@@ -125,7 +120,6 @@ def validate_certificate(cert) -> dict:
     Returns a dict with validation results.
     """
     now = datetime.datetime.utcnow()
-    # Use UTC-aware properties to avoid deprecation warnings
     try:
         not_before = cert.not_valid_before_utc.replace(tzinfo=None)
         not_after  = cert.not_valid_after_utc.replace(tzinfo=None)
@@ -149,16 +143,13 @@ def validate_certificate(cert) -> dict:
         result["errors"].append("Certificate has expired")
     return result
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  3. MESSAGE DIGEST  (Integrity)
-# ─────────────────────────────────────────────────────────────────────────────
+# 3. MESSAGE DIGEST (Integrity)
 
 def compute_digest(data: dict) -> str:
     """
     Compute SHA-256 digest of a transaction row.
 
-    The data dict is serialised with sorted keys to guarantee determinism —
+    The data dict is serialised with sorted keys to guarantee determinism -
     same data always produces the same hash regardless of key insertion order.
 
     Returns:
@@ -168,15 +159,13 @@ def compute_digest(data: dict) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  4. DIGITAL SIGNATURE  (Authenticity + Non-repudiation)
-# ─────────────────────────────────────────────────────────────────────────────
+# 4. DIGITAL SIGNATURE (Authenticity and Non-repudiation)
 
 def sign_digest(digest_hex: str, private_key) -> str:
     """
     Sign the SHA-256 digest with the sender's private RSA key.
 
-    Uses RSA-PSS (Probabilistic Signature Scheme) — stronger than PKCS1v15
+    Uses RSA-PSS (Probabilistic Signature Scheme) - stronger than PKCS1v15
     because it is randomised and resistant to chosen-message attacks.
 
     Returns:
@@ -214,9 +203,7 @@ def verify_signature(digest_hex: str, signature_b64: str, public_key) -> bool:
         return False
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  5. JWT  (Secure claim container + Replay protection)
-# ─────────────────────────────────────────────────────────────────────────────
+# 5. JWT (Secure claim container and Replay protection)
 
 def create_jwt(tx_data: dict, digest: str, rsa_signature: str,
                private_key, issuer: str = "BankSecureGateway") -> str:
@@ -229,7 +216,7 @@ def create_jwt(tx_data: dict, digest: str, rsa_signature: str,
           iss  : issuer identity,
           iat  : issued-at timestamp,
           exp  : expiry (1 hour),
-          jti  : unique token ID — prevents Replay attacks,
+          jti  : unique token ID that helps prevent replay attacks,
           sub  : transaction ID,
           data : original transaction row,
           digest      : SHA-256 hash of data,
@@ -247,7 +234,7 @@ def create_jwt(tx_data: dict, digest: str, rsa_signature: str,
         "iss": issuer,
         "iat": now,
         "exp": now + datetime.timedelta(hours=1),
-        "jti": str(uuid.uuid4()),          # Unique token ID → anti-replay
+        "jti": str(uuid.uuid4()),          # Unique token ID for anti-replay
         "sub": tx_data.get("tx_id", "unknown"),
         "role": "transaction_record",       # Custom claim
         "data": tx_data,
@@ -271,10 +258,7 @@ def verify_jwt(token: str, public_key) -> dict:
     return decoded
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  6. HYBRID ENCRYPTION  (Confidentiality)
-# ─────────────────────────────────────────────────────────────────────────────
-
+# 6. HYBRID ENCRYPTION (Confidentiality)
 def encrypt_token(jwt_token: str, recipient_public_key) -> dict:
     """
     Hybrid encryption:
@@ -283,8 +267,8 @@ def encrypt_token(jwt_token: str, recipient_public_key) -> dict:
       3. Encrypt the session key with RSA-OAEP (recipient's public key)
 
     Why hybrid?
-      - RSA is slow for large data → use AES for the payload
-      - AES key is small → safe to encrypt with RSA
+      - RSA is slow for large data, so AES is used for payload
+      - AES key is small, so RSA is suitable for key wrapping
       - Only the recipient (with their private key) can recover AES key
 
     Returns:
@@ -302,7 +286,7 @@ def encrypt_token(jwt_token: str, recipient_public_key) -> dict:
     encryptor = cipher.encryptor()
     ciphertext = encryptor.update(token_padded) + encryptor.finalize()
 
-    # Encrypt session key with recipient's RSA public key
+    # Encrypt session key with recipient RSA public key
     enc_session_key = recipient_public_key.encrypt(
         session_key,
         padding.OAEP(

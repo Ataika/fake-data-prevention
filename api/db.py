@@ -1,6 +1,6 @@
 """
 db.py
-SQLite слой для Flask API.
+SQLite data-access layer for Flask API.
 """
 
 import json
@@ -9,7 +9,7 @@ import sqlite3
 
 
 def get_db_path():
-    """Путь к БД. Можно переопределить env FDP_DB_PATH."""
+    """Return DB path, optionally overridden by FDP_DB_PATH."""
     env_path = os.getenv("FDP_DB_PATH")
     if env_path:
         return env_path
@@ -24,7 +24,7 @@ def _connect(row_factory=False):
 
 
 def init_db():
-    """Инициализация SQLite таблиц."""
+    """Initialize SQLite tables."""
     os.makedirs(os.path.dirname(get_db_path()), exist_ok=True)
     conn = _connect()
     cursor = conn.cursor()
@@ -68,7 +68,7 @@ def init_db():
 
 
 def save_transaction(tx_data, digest, signature, jwt_payload):
-    """Сохраняет транзакцию. False если дубликат tx_id."""
+    """Save transaction row. Return False on duplicate tx_id."""
     conn = _connect()
     cursor = conn.cursor()
 
@@ -105,7 +105,7 @@ def save_transaction(tx_data, digest, signature, jwt_payload):
 
 
 def log_attack(attack_type, tx_id, detected):
-    """Пишет запись о попытке атаки."""
+    """Insert attack log record."""
     conn = _connect()
     cursor = conn.cursor()
     cursor.execute(
@@ -169,4 +169,3 @@ def get_stats():
         "total_attacks": total_attacks,
         "attacks_by_type": attacks_by_type,
     }
-

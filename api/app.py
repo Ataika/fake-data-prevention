@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Flask API для fake-data-prevention проекта.
+Flask API for fake-data-prevention project.
 Production-ready baseline:
 - env-driven config
 - modular services (db/crypto)
@@ -39,7 +39,7 @@ except ImportError:
     from db import get_stats as db_get_stats
     from db import init_db, list_attack_logs, list_transactions, log_attack, save_transaction
 
-# Подключаем src-модули для Merkle и Multi-party.
+# Load src modules for Merkle and Multi-party.
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SRC_DIR = os.path.join(ROOT_DIR, "src")
 if SRC_DIR not in sys.path:
@@ -72,10 +72,7 @@ multiparty_protocol = MultiPartyProtocol() if MultiPartyProtocol else None
 
 
 def _verify_row(tx):
-    """
-    Верификация строки из transactions:
-    digest + signature + срок jwt payload.
-    """
+    """Verify persisted transaction row: digest, signature, and JWT fields."""
     source_data = {
         "tx_id": tx.get("tx_id"),
         "timestamp": tx.get("timestamp"),
@@ -115,7 +112,7 @@ def _verify_row(tx):
         error = "JWT is expired or inconsistent"
 
     tx["verdict"] = verdict
-    tx["ver_status"] = "✅ VALID" if verdict == "VALID" else f"❌ {verdict} DETECTED"
+    tx["ver_status"] = "VALID" if verdict == "VALID" else f"{verdict} DETECTED"
     tx["cert_valid"] = True
     tx["jwt_valid"] = jwt_valid
     tx["digest_valid"] = digest_valid
@@ -127,7 +124,7 @@ def _verify_row(tx):
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
-    """Проверка что сервер жив."""
+    """Health endpoint."""
     return jsonify(
         {
             "status": "ok",
@@ -141,10 +138,7 @@ def health_check():
 
 @app.route("/api/sign", methods=["POST"])
 def sign_transaction():
-    """
-    Подписывает транзакцию:
-    canonical json -> digest -> hmac signature -> jwt payload -> save db.
-    """
+    """Sign transaction and persist digest/signature/JWT payload."""
     try:
         tx_data = request.get_json(silent=True)
         ok, err = validate_transaction_payload(tx_data)
@@ -173,7 +167,7 @@ def sign_transaction():
 
 @app.route("/api/verify", methods=["POST"])
 def verify_transaction():
-    """Проверяет digest и signature для переданной транзакции."""
+    """Verify digest and signature for submitted transaction payload."""
     try:
         data = request.get_json(silent=True) or {}
         tx_data = data.get("data")
@@ -218,7 +212,7 @@ def verify_transaction():
 
 @app.route("/api/transactions", methods=["GET"])
 def get_transactions():
-    """Возвращает последние транзакции."""
+    """Return recent transaction rows."""
     try:
         rows = list_transactions(limit=100)
         return jsonify({"count": len(rows), "transactions": rows})
@@ -228,7 +222,7 @@ def get_transactions():
 
 @app.route("/api/attack_logs", methods=["GET"])
 def get_attack_logs():
-    """Возвращает логи атак."""
+    """Return recent attack logs."""
     try:
         logs = list_attack_logs(limit=50)
         return jsonify({"count": len(logs), "logs": logs})
@@ -238,7 +232,7 @@ def get_attack_logs():
 
 @app.route("/api/stats", methods=["GET"])
 def get_stats():
-    """Статистика для дашборда."""
+    """Return dashboard statistics."""
     try:
         return jsonify(db_get_stats())
     except Exception as e:
@@ -247,7 +241,7 @@ def get_stats():
 
 @app.route("/api/transactions/verified", methods=["GET"])
 def get_verified_transactions():
-    """Возвращает транзакции с верификацией для frontend таблицы."""
+    """Return verified transaction records for frontend table."""
     try:
         limit = int(request.args.get("limit", "100"))
         limit = max(1, min(limit, 500))
@@ -260,7 +254,7 @@ def get_verified_transactions():
 
 @app.route("/api/merkle/root", methods=["GET"])
 def merkle_root():
-    """Считает Merkle root по digest последних транзакций."""
+    """Compute Merkle root using recent transaction digests."""
     if MerkleTree is None:
         return jsonify({"error": f"Merkle module unavailable: {merkle_import_error or 'unknown error'}"}), 500
     try:
@@ -284,7 +278,7 @@ def merkle_root():
 
 @app.route("/api/multiparty/init", methods=["POST"])
 def multiparty_init():
-    """Инициализация подписи цепочки."""
+    """Initialize multi-party chain with first signer."""
     if multiparty_protocol is None:
         return jsonify({"error": f"Multi-party module unavailable: {multiparty_import_error or 'unknown error'}"}), 500
     try:
@@ -303,7 +297,7 @@ def multiparty_init():
 
 @app.route("/api/multiparty/sign/<tx_id>", methods=["POST"])
 def multiparty_sign(tx_id):
-    """Добавление подписи участника к цепочке."""
+    """Add party signature to existing chain."""
     if multiparty_protocol is None:
         return jsonify({"error": f"Multi-party module unavailable: {multiparty_import_error or 'unknown error'}"}), 500
     try:
@@ -323,7 +317,7 @@ def multiparty_sign(tx_id):
 
 @app.route("/api/multiparty/<tx_id>", methods=["GET"])
 def multiparty_status(tx_id):
-    """Текущий статус цепочки подписей."""
+    """Return current multi-party chain status."""
     if multiparty_protocol is None:
         return jsonify({"error": f"Multi-party module unavailable: {multiparty_import_error or 'unknown error'}"}), 500
     try:

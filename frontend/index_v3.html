@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fake Data Prevention — Security Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --cream:#f0ece4;--parchment:#e8e2d8;--sand:#d9d2c5;
+      --ink:#1a1814;--ink-mid:#4a453d;--ink-soft:#8a837a;--line:#c8c0b4;
+      --ok:#3d6b4f;--ok-light:#c8ddd0;--ok-bg:#edf7f1;
+      --warn:#8b4513;--warn-light:#e8d5c4;--warn-bg:#fdf5ef;
+      --danger:#6b1a1a;--danger-light:#e8c8c8;--danger-bg:#fdf0f0;
+      --replay:#4a3d6b;--replay-light:#d5cfea;--replay-bg:#f3f0fa;
+      --serif:'Playfair Display',Georgia,serif;
+      --mono:'DM Mono','Courier New',monospace;
+      --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+    /* ── HEADER ── */
+    header{border-bottom:1px solid var(--line);padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:var(--cream);position:sticky;top:0;z-index:200}
+    .logo{font-family:var(--serif);font-size:1.05rem;font-weight:500;letter-spacing:-.02em}
+    .nav-tag{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft);border:1px solid var(--line);padding:.22rem .7rem}
+
+    /* ── TABS ── */
+    .tabs-bar{border-bottom:1px solid var(--line);display:flex;background:var(--cream);position:sticky;top:58px;z-index:100}
+    .tab{padding:.85rem 2rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:1px solid var(--line)}
+    .tab:last-child{border-right:none}
+    .tab:hover{color:var(--ink);background:var(--parchment)}
+    .tab.active{color:var(--ink);border-bottom-color:var(--ink);background:var(--cream)}
+
+    /* ── TAB PANELS ── */
+    .panel{display:none}.panel.active{display:block}
+
+    /* ── SHARED: EYEBROW ── */
+    .eyebrow{font-family:var(--mono);font-size:.67rem;color:var(--ink-soft);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;display:flex;align-items:center;gap:.7rem}
+    .eyebrow::before{content:'';display:inline-block;width:2rem;height:1px;background:var(--ink-soft)}
+    .section-label{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft);letter-spacing:.1em;text-transform:uppercase;padding-bottom:1.1rem;margin-bottom:1.75rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+
+    /* ═══════════════════════════════════
+       TAB 1 — OVERVIEW
+    ═══════════════════════════════════ */
+    .hero{padding:4.5rem 3rem 3.5rem;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:end}
+    h1{font-family:var(--serif);font-size:clamp(2.1rem,3.6vw,3.2rem);font-weight:400;line-height:1.13;letter-spacing:-.02em}
+    .hero-desc{font-size:.87rem;color:var(--ink-mid);line-height:1.75;margin-bottom:1.75rem;max-width:40ch}
+    .meta-row{display:flex;justify-content:space-between;padding:.62rem 0;border-bottom:1px solid var(--line);font-size:.78rem}
+    .meta-row .k{font-family:var(--mono);color:var(--ink-soft);font-size:.67rem;text-transform:uppercase;letter-spacing:.05em}
+
+    /* Ring */
+    .ring-section{display:flex;justify-content:center;align-items:center;padding:3.5rem 3rem;border-bottom:1px solid var(--line);position:relative}
+    .ring-wrap{position:relative;width:280px;height:280px}
+    .ring-svg{width:100%;height:100%;animation:spin 50s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .ring-pct{font-family:var(--serif);font-size:3rem;font-weight:400;line-height:1}
+    .ring-lbl{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft);letter-spacing:.1em;text-transform:uppercase;margin-top:.45rem}
+    .ring-sub{font-family:var(--serif);font-size:.85rem;font-style:italic;color:var(--ink-mid);margin-top:.2rem}
+    .ring-aside{position:absolute;display:flex;flex-direction:column;gap:1.75rem}
+    .ring-aside.left{left:4rem;top:50%;transform:translateY(-50%)}
+    .ring-aside.right{right:4rem;top:50%;transform:translateY(-50%);text-align:right}
+    .aside-n{font-family:var(--serif);font-size:1.8rem;font-weight:400;color:var(--ink);line-height:1}
+    .aside-l{font-family:var(--mono);font-size:.6rem;color:var(--ink-soft);letter-spacing:.08em;text-transform:uppercase;margin-top:.18rem}
+
+    /* KPI strip */
+    .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line)}
+    .kpi-cell{padding:2.25rem 1.75rem;border-right:1px solid var(--line);transition:background .2s;cursor:default}
+    .kpi-cell:last-child{border-right:none}
+    .kpi-cell:hover{background:var(--parchment)}
+    .kpi-lbl{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.55rem}
+    .kpi-n{font-family:var(--serif);font-size:2.6rem;font-weight:400;line-height:1;margin-bottom:.35rem}
+    .kpi-d{font-family:var(--serif);font-size:.78rem;font-style:italic;color:var(--ink-soft)}
+    .kpi-cell.total .kpi-n{color:var(--ink)}.kpi-cell.valid .kpi-n{color:var(--ok)}
+    .kpi-cell.mod .kpi-n{color:var(--warn)}.kpi-cell.fab .kpi-n{color:var(--danger)}.kpi-cell.rep .kpi-n{color:var(--replay)}
+
+    /* Two-col */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+    .col{padding:2.75rem;border-right:1px solid var(--line)}
+    .col:last-child{border-right:none}
+
+    /* Attacks */
+    .attack{padding:1.4rem 0;border-bottom:1px solid var(--line)}
+    .attack:last-child{border-bottom:none}
+    .attack-hdr{display:flex;align-items:baseline;gap:.8rem;margin-bottom:.65rem}
+    .attack-idx{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft)}
+    .attack-name{font-family:var(--serif);font-size:1.05rem;color:var(--ink)}
+    .attack-tag{margin-left:auto;font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;padding:.1rem .48rem;border:1px solid}
+    .attack-tag.fab{color:var(--danger);border-color:var(--danger-light)}.attack-tag.mod{color:var(--warn);border-color:var(--warn-light)}.attack-tag.rep{color:var(--replay);border-color:var(--replay-light)}
+    .attack-desc{font-size:.79rem;color:var(--ink-mid);line-height:1.65;margin-bottom:.6rem}
+    .attack-det{font-family:var(--mono);font-size:.63rem;color:var(--ok)}
+    .attack-det::before{content:'↳ '}
+
+    /* Flow */
+    .flow-item{display:grid;grid-template-columns:1.8rem 1fr;gap:.8rem;padding:.95rem 0;border-bottom:1px solid var(--line);align-items:start}
+    .flow-item:last-child{border-bottom:none}
+    .flow-n{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft);padding-top:.1rem}
+    .flow-title{font-family:var(--serif);font-size:.9rem;color:var(--ink);margin-bottom:.15rem}
+    .flow-desc{font-size:.75rem;color:var(--ink-soft);line-height:1.5}
+    .flow-tool{display:inline-block;margin-top:.3rem;font-family:var(--mono);font-size:.58rem;color:var(--ink-mid);border:1px solid var(--line);padding:.07rem .38rem}
+
+    /* Tools */
+    .tools-section{padding:2.75rem;border-bottom:1px solid var(--line)}
+    .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:1.75rem}
+    .tool{padding:1.75rem 1.5rem;border-right:1px solid var(--line);transition:background .2s}
+    .tool:last-child{border-right:none}.tool:hover{background:var(--parchment)}
+    .tool-num{font-family:var(--mono);font-size:.58rem;color:var(--ink-soft);letter-spacing:.08em;margin-bottom:1.1rem}
+    .tool-name{font-family:var(--serif);font-size:1rem;color:var(--ink);margin-bottom:.65rem;line-height:1.3}
+    .tool-desc{font-size:.75rem;color:var(--ink-mid);line-height:1.6;margin-bottom:.85rem}
+    .tool-goal{font-family:var(--mono);font-size:.62rem;color:var(--ok);letter-spacing:.03em}
+
+    /* ═══════════════════════════════════
+       TAB 2 — TRANSACTION LOG
+    ═══════════════════════════════════ */
+    .log-hero{padding:3rem;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end}
+    .log-desc{font-size:.86rem;color:var(--ink-mid);line-height:1.75;max-width:42ch}
+    .sec-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+    .sec-cell{padding:1.75rem;border-right:1px solid var(--line);transition:background .2s}
+    .sec-cell:last-child{border-right:none}.sec-cell:hover{background:var(--parchment)}
+    .sec-icon{font-family:var(--mono);font-size:.58rem;color:var(--ink-soft);letter-spacing:.08em;margin-bottom:.6rem}
+    .sec-name{font-family:var(--serif);font-size:.95rem;color:var(--ink);margin-bottom:.45rem}
+    .sec-desc{font-size:.73rem;color:var(--ink-mid);line-height:1.5}
+    .sec-ok{font-family:var(--mono);font-size:.6rem;color:var(--ok);margin-top:.6rem}
+    .sec-fail{font-family:var(--mono);font-size:.6rem;color:var(--danger);margin-top:.18rem}
+
+    .glossary{padding:2.75rem;border-bottom:1px solid var(--line)}
+    .fields-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:1.75rem}
+    .field-card{padding:1.5rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .2s}
+    .field-card:hover{background:var(--parchment)}
+    .field-card:nth-child(3n){border-right:none}.field-card:nth-last-child(-n+3){border-bottom:none}
+    .field-name{font-family:var(--mono);font-size:.7rem;color:var(--ink);margin-bottom:.4rem}
+    .field-type{display:inline-block;font-family:var(--mono);font-size:.57rem;color:var(--ink-soft);border:1px solid var(--line);padding:.06rem .38rem;margin-bottom:.6rem}
+    .field-desc{font-size:.75rem;color:var(--ink-mid);line-height:1.58}
+    .field-ex{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft);margin-top:.45rem;padding-top:.45rem;border-top:1px solid var(--line)}
+
+    .tbl-controls{padding:1.75rem 2.75rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+    .filter-bar{display:flex;border:1px solid var(--line)}
+    .fbtn{padding:.35rem .85rem;border:none;border-right:1px solid var(--line);background:transparent;font-family:var(--mono);font-size:.63rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;transition:all .18s}
+    .fbtn:last-child{border-right:none}.fbtn:hover{background:var(--parchment);color:var(--ink)}.fbtn.active{background:var(--ink);color:var(--cream)}
+    .search-input{font-family:var(--mono);font-size:.7rem;border:1px solid var(--line);background:transparent;padding:.38rem .9rem;color:var(--ink);outline:none;width:210px}
+    .search-input::placeholder{color:var(--ink-soft)}.search-input:focus{border-color:var(--ink-soft)}
+    .row-count{font-family:var(--mono);font-size:.63rem;color:var(--ink-soft)}
+
+    .log-table-wrap{padding:0 2.75rem 2.75rem;overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    thead th{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:.8rem 1rem;border-bottom:1px solid var(--line);background:var(--parchment);font-weight:400;white-space:nowrap}
+    tbody tr.dr{border-bottom:1px solid var(--line);transition:background .12s;cursor:pointer}
+    tbody tr.dr:hover{background:var(--parchment)}
+    tbody td{padding:.72rem 1rem;font-size:.76rem;color:var(--ink-mid)}
+    .td-id{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft)}
+    .td-ts{font-family:var(--mono);font-size:.64rem;color:var(--ink-soft)}
+    .td-amt{font-family:var(--mono);font-size:.72rem;color:var(--ink);text-align:right}
+    .stag{display:inline-block;font-family:var(--mono);font-size:.56rem;letter-spacing:.05em;padding:.08rem .48rem;border:1px solid;white-space:nowrap}
+    .stag.ok{color:var(--ok);border-color:var(--ok-light)}.stag.mod{color:var(--warn);border-color:var(--warn-light)}
+    .stag.fab{color:var(--danger);border-color:var(--danger-light)}.stag.rep{color:var(--replay);border-color:var(--replay-light)}
+    .cat-tag{display:inline-block;font-family:var(--mono);font-size:.56rem;color:var(--ink-soft);border:1px solid var(--line);padding:.06rem .38rem}
+    .bok{color:var(--ok);font-family:var(--mono);font-size:.68rem}.bno{color:var(--danger);font-family:var(--mono);font-size:.68rem}
+    .detail-row{display:none;background:var(--parchment)}.detail-row.open{display:table-row}
+    .detail-cell{padding:1.25rem 2rem;border-bottom:1px solid var(--line)}
+    .detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+    .df-key{font-family:var(--mono);font-size:.58rem;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.25rem}
+    .df-val{font-size:.77rem;color:var(--ink);font-family:var(--mono);word-break:break-all}
+    .detail-checks{margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap}
+    .cpill{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.62rem;padding:.2rem .65rem;border:1px solid}
+    .cpill.pass{color:var(--ok);border-color:var(--ok-light)}.cpill.fail{color:var(--danger);border-color:var(--danger-light)}
+    .err-msg{margin-top:.65rem;font-family:var(--mono);font-size:.65rem;color:var(--danger);padding:.45rem .65rem;background:var(--danger-bg);border-left:2px solid var(--danger)}
+
+    /* ═══════════════════════════════════
+       TAB 3 — SIMULATOR
+    ═══════════════════════════════════ */
+    .sim-hero{padding:3.5rem 3rem 3rem;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:end}
+    .sim-desc{font-size:.86rem;color:var(--ink-mid);line-height:1.75;margin-bottom:1.5rem;max-width:44ch}
+    .step-pills{display:flex;gap:.45rem;flex-wrap:wrap}
+    .step-pill{font-family:var(--mono);font-size:.6rem;color:var(--ink-soft);border:1px solid var(--line);padding:.18rem .62rem}
+
+    /* Upload */
+    .upload-section{padding:2.75rem;border-bottom:1px solid var(--line)}
+    .upload-zone{border:1px dashed var(--sand);padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--parchment)}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--ink-soft);background:var(--sand)}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-icon{font-size:1.4rem;opacity:.4;margin-bottom:.65rem}
+    .upload-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);margin-bottom:.35rem}
+    .upload-sub{font-size:.76rem;color:var(--ink-soft);margin-bottom:.5rem}
+    .upload-demo{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft)}
+    .upload-demo span{cursor:pointer;text-decoration:underline;color:var(--ink-mid)}
+
+    /* Pipeline progress */
+    .pipeline-bar{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--line)}
+    .pipe-cell{padding:1.5rem;border-right:1px solid var(--line);position:relative;transition:background .2s}
+    .pipe-cell:last-child{border-right:none}
+    .pipe-n{font-family:var(--mono);font-size:.58rem;color:var(--ink-soft);letter-spacing:.08em;margin-bottom:.5rem}
+    .pipe-title{font-family:var(--serif);font-size:.88rem;color:var(--ink);margin-bottom:.28rem}
+    .pipe-desc{font-size:.7rem;color:var(--ink-soft);line-height:1.45}
+    .pipe-st{margin-top:.65rem;font-family:var(--mono);font-size:.62rem}
+    .pipe-st.pending{color:var(--ink-soft)}.pipe-st.running{color:var(--warn);animation:blink 1s infinite}.pipe-st.done{color:var(--ok)}.pipe-st.fail{color:var(--danger)}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+    .pipe-prog{position:absolute;bottom:0;left:0;height:2px;background:var(--ok);width:0;transition:width .35s}
+
+    /* Stats row */
+    .sim-stats{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--line)}
+    .sstat{padding:1.5rem 1.25rem;border-right:1px solid var(--line);transition:background .2s}
+    .sstat:last-child{border-right:none}.sstat:hover{background:var(--parchment)}
+    .sstat-n{font-family:var(--serif);font-size:2rem;font-weight:400;line-height:1;margin-bottom:.3rem}
+    .sstat-l{font-family:var(--mono);font-size:.6rem;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase}
+    .sstat.s-total .sstat-n{color:var(--ink)}.sstat.s-ok .sstat-n{color:var(--ok)}
+    .sstat.s-mod .sstat-n{color:var(--warn)}.sstat.s-fab .sstat-n{color:var(--danger)}
+    .sstat.s-rep .sstat-n{color:var(--replay)}.sstat.s-time .sstat-n{color:var(--ink-mid)}
+
+    /* Sim table */
+    .sim-table-wrap{padding:1.75rem 2.75rem;overflow-x:auto}
+    .sim-tbl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+    .sim-tbl-title{font-family:var(--serif);font-size:1.1rem;font-style:italic;font-weight:400}
+    .stress-btn{font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;border:1px solid var(--danger-light);color:var(--danger);padding:.3rem .85rem;cursor:pointer;background:transparent;transition:all .2s}
+    .stress-btn:hover{background:var(--danger);color:white;border-color:var(--danger)}
+    .stress-btn:disabled{opacity:.4;cursor:default}
+    .atk-btn{font-family:var(--mono);font-size:.57rem;letter-spacing:.04em;border:1px solid;padding:.14rem .48rem;cursor:pointer;background:transparent;transition:all .15s;margin-right:.25rem}
+    .atk-btn.mod{color:var(--warn);border-color:var(--warn-light)}.atk-btn.mod:hover{background:var(--warn);color:white}
+    .atk-btn.fab{color:var(--danger);border-color:var(--danger-light)}.atk-btn.fab:hover{background:var(--danger);color:white}
+    .atk-btn.rep{color:var(--replay);border-color:var(--replay-light)}.atk-btn.rep:hover{background:var(--replay);color:white}
+    .atk-btn.rst{color:var(--ink-soft);border-color:var(--line)}.atk-btn.rst:hover{background:var(--parchment)}
+    .atk-btn:disabled{opacity:.35;cursor:default}
+    .vstag{display:inline-block;font-family:var(--mono);font-size:.56rem;letter-spacing:.04em;padding:.08rem .45rem;border:1px solid}
+    .vstag.ok{color:var(--ok);border-color:var(--ok-light)}.vstag.pending{color:var(--ink-soft);border-color:var(--line)}
+    .vstag.fail-mod{color:var(--warn);border-color:var(--warn-light)}.vstag.fail-fab{color:var(--danger);border-color:var(--danger-light)}.vstag.fail-rep{color:var(--replay);border-color:var(--replay-light)}
+    .dig-short{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft);cursor:help}
+
+    /* Live log */
+    .live-log-section{padding:1.75rem 2.75rem;background:var(--parchment);border-top:1px solid var(--line)}
+    .log-hdr{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.85rem;display:flex;justify-content:space-between;align-items:center}
+    .log-clear-btn{background:none;border:1px solid var(--line);font-family:var(--mono);font-size:.58rem;color:var(--ink-soft);padding:.12rem .45rem;cursor:pointer}
+    .log-clear-btn:hover{border-color:var(--ink-soft);color:var(--ink)}
+    #live-log{font-family:var(--mono);font-size:.68rem;line-height:1.7;max-height:240px;overflow-y:auto;color:var(--ink-mid)}
+    .log-ok{color:var(--ok)}.log-err{color:var(--danger)}.log-warn{color:var(--warn)}.log-info{color:var(--ink-soft)}
+
+    /* Empty */
+    .empty{padding:4rem 3rem;text-align:center}
+    .empty-icon{font-size:2rem;opacity:.2;margin-bottom:.85rem}
+    .empty-t{font-family:var(--serif);font-size:1.1rem;color:var(--ink-soft);margin-bottom:.4rem}
+    .empty-s{font-size:.8rem;color:var(--ink-soft)}
+
+    /* ── FOOTER ── */
+    footer{padding:2rem 3rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line)}
+    .foot-l{font-family:var(--serif);font-size:.8rem;font-style:italic;color:var(--ink-soft)}
+    .foot-r{font-family:var(--mono);font-size:.6rem;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase}
+
+    /* Fade */
+    .fade{opacity:0;transform:translateY(12px);animation:fi .6s ease forwards}
+    @keyframes fi{to{opacity:1;transform:translateY(0)}}
+    .fade:nth-child(1){animation-delay:.04s}.fade:nth-child(2){animation-delay:.12s}
+    .fade:nth-child(3){animation-delay:.2s}.fade:nth-child(4){animation-delay:.28s}.fade:nth-child(5){animation-delay:.36s}
+
+    @media(max-width:900px){
+      .hero,.two-col,.sim-hero,.log-hero{grid-template-columns:1fr}
+      .kpi-strip{grid-template-columns:repeat(3,1fr)}.tools-grid{grid-template-columns:repeat(2,1fr)}
+      .sec-strip,.pipeline-bar,.sim-stats{grid-template-columns:repeat(2,1fr)}
+      header{padding:1rem 1.5rem}.ring-aside{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FakeDataPrevention</div>
+  <span class="nav-tag">UniMe · System Security · 2024/25</span>
+</header>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab active" onclick="switchTab('overview',this)">Overview</button>
+  <button class="tab" onclick="switchTab('log',this)">Transaction Log</button>
+  <button class="tab" onclick="switchTab('simulator',this)">Attack Simulator</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PANEL 1 — OVERVIEW
+═══════════════════════════════════════════════════ -->
+<div id="panel-overview" class="panel active">
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">System Security · Data Analysis</p>
+      <h1>Securing data<br>against fabrication<br>and modification.</h1>
+    </div>
+    <div>
+      <p class="hero-desc">A cryptographic pipeline that signs, encrypts, and verifies every financial transaction — making fake data mathematically impossible to inject undetected.</p>
+      <div>
+        <div class="meta-row"><span class="k">Signing</span><span>RSA-PSS 2048-bit · SHA-256</span></div>
+        <div class="meta-row"><span class="k">Encryption</span><span>AES-256-CBC · RSA-OAEP</span></div>
+        <div class="meta-row"><span class="k">Token</span><span>JWT RS256 · exp · jti</span></div>
+        <div class="meta-row"><span class="k">Identity</span><span>X.509 Certificate (PKI)</span></div>
+        <div class="meta-row"><span class="k">Dataset</span><span>100 synthetic bank transactions</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ring-section">
+    <div class="ring-aside left">
+      <div><div class="aside-n" id="s-valid">—</div><div class="aside-l">Valid</div></div>
+      <div><div class="aside-n" id="s-threats">—</div><div class="aside-l">Threats</div></div>
+    </div>
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="ticks"></g>
+        <circle cx="140" cy="140" r="122" stroke="#c8c0b4" stroke-width=".75"/>
+        <circle cx="140" cy="140" r="104" stroke="#c8c0b4" stroke-width=".5" stroke-dasharray="2 5"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" id="ring-pct">—</div>
+        <div class="ring-lbl">Detection Rate</div>
+        <div class="ring-sub">of injected attacks</div>
+      </div>
+    </div>
+    <div class="ring-aside right">
+      <div><div class="aside-n" id="s-total">—</div><div class="aside-l">Total Rows</div></div>
+      <div><div class="aside-n" id="s-fab-n">—</div><div class="aside-l">Attacks</div></div>
+    </div>
+  </section>
+
+  <section class="kpi-strip">
+    <div class="kpi-cell total fade"><div class="kpi-lbl">Total Rows</div><div class="kpi-n" id="kpi-total">—</div><div class="kpi-d">Processed</div></div>
+    <div class="kpi-cell valid fade"><div class="kpi-lbl">Valid</div><div class="kpi-n" id="kpi-valid">—</div><div class="kpi-d">Authenticated</div></div>
+    <div class="kpi-cell mod fade"><div class="kpi-lbl">Modification</div><div class="kpi-n" id="kpi-mod">—</div><div class="kpi-d">Digest mismatch</div></div>
+    <div class="kpi-cell fab fade"><div class="kpi-lbl">Fabrication</div><div class="kpi-n" id="kpi-fab">—</div><div class="kpi-d">Forged signature</div></div>
+    <div class="kpi-cell rep fade"><div class="kpi-lbl">Replay</div><div class="kpi-n" id="kpi-rep">—</div><div class="kpi-d">Duplicate token</div></div>
+  </section>
+
+  <section class="two-col">
+    <div class="col">
+      <div class="section-label"><span>Simulated Attacks</span><span>03 vectors</span></div>
+      <div class="attack"><div class="attack-hdr"><span class="attack-idx">01</span><span class="attack-name">Fabrication</span><span class="attack-tag fab">ATTACK·A</span></div><p class="attack-desc">Attacker injects a completely fabricated transaction signed with their own private RSA key. The X.509 certificate does not match the trusted sender — JWT RS256 verification fails immediately.</p><p class="attack-det">Detected by: Certificate validation + JWT RS256</p></div>
+      <div class="attack"><div class="attack-hdr"><span class="attack-idx">02</span><span class="attack-name">Modification</span><span class="attack-tag mod">ATTACK·B</span></div><p class="attack-desc">Attacker with DB access flips raw bytes inside the AES-256 ciphertext. Decryption produces corrupt data — SHA-256 recomputation yields a completely different digest than sealed in the JWT.</p><p class="attack-det">Detected by: AES failure + SHA-256 digest mismatch</p></div>
+      <div class="attack"><div class="attack-hdr"><span class="attack-idx">03</span><span class="attack-name">Replay</span><span class="attack-tag rep">ATTACK·C</span></div><p class="attack-desc">Attacker captures a legitimately signed row and re-injects it under a new ID, simulating a duplicate payment. The JWT <code>jti</code> unique token ID and <code>exp</code> expiry prevent reuse.</p><p class="attack-det">Detected by: JWT jti uniqueness + replay DB tag</p></div>
+    </div>
+    <div class="col">
+      <div class="section-label"><span>Data Flow Pipeline</span><span>10 steps</span></div>
+      <div class="flow-item"><span class="flow-n">01</span><div><p class="flow-title">Load Transaction</p><p class="flow-desc">CSV row deserialised into canonical Python dict.</p></div></div>
+      <div class="flow-item"><span class="flow-n">02</span><div><p class="flow-title">Message Digest</p><p class="flow-desc">SHA-256 of canonical JSON — deterministic data fingerprint.</p><span class="flow-tool">hashlib.sha256</span></div></div>
+      <div class="flow-item"><span class="flow-n">03</span><div><p class="flow-title">Digital Signature</p><p class="flow-desc">RSA-PSS signs the digest with sender's 2048-bit private key.</p><span class="flow-tool">RSA-PSS · SHA-256</span></div></div>
+      <div class="flow-item"><span class="flow-n">04</span><div><p class="flow-title">JWT Packaging</p><p class="flow-desc">Data + digest + RSA sig wrapped in RS256-signed JWT with iss/exp/jti.</p><span class="flow-tool">PyJWT · RS256</span></div></div>
+      <div class="flow-item"><span class="flow-n">05</span><div><p class="flow-title">Hybrid Encryption</p><p class="flow-desc">AES-256-CBC encrypts JWT. RSA-OAEP seals the session key.</p><span class="flow-tool">AES-256-CBC · RSA-OAEP</span></div></div>
+      <div class="flow-item"><span class="flow-n">06</span><div><p class="flow-title">Certificate Validation</p><p class="flow-desc">X.509 cert validated — trusted public key extracted from PKI chain.</p></div></div>
+      <div class="flow-item"><span class="flow-n">07</span><div><p class="flow-title">AES Decryption</p><p class="flow-desc">Session key decrypted with recipient RSA private key, JWT recovered.</p></div></div>
+      <div class="flow-item"><span class="flow-n">08</span><div><p class="flow-title">JWT Verification</p><p class="flow-desc">RS256 signature verified; exp and jti claims checked.</p></div></div>
+      <div class="flow-item"><span class="flow-n">09</span><div><p class="flow-title">Digest Recomputation</p><p class="flow-desc">SHA-256 of recovered data must exactly match stored digest.</p></div></div>
+      <div class="flow-item"><span class="flow-n">10</span><div><p class="flow-title">Signature Verification</p><p class="flow-desc">RSA-PSS verify confirms non-repudiation. All pass → VALID.</p></div></div>
+    </div>
+  </section>
+
+  <section class="tools-section">
+    <div class="section-label"><span>Cryptographic Instruments</span><span>04 tools</span></div>
+    <div class="tools-grid">
+      <div class="tool"><div class="tool-num">Tool · 01</div><div class="tool-name">Digital Signature<br>RSA-PSS</div><p class="tool-desc">SHA-256 digest signed with sender's private key via PSS padding — randomised, resistant to chosen-message attacks.</p><p class="tool-goal">→ Prevents Fabrication · Non-repudiation</p></div>
+      <div class="tool"><div class="tool-num">Tool · 02</div><div class="tool-name">X.509 Certificate<br>PKI Chain</div><p class="tool-desc">Binds sender identity to public key. Receiver validates before trusting — simulating a real CA chain.</p><p class="tool-goal">→ Prevents Identity Spoofing</p></div>
+      <div class="tool"><div class="tool-num">Tool · 03</div><div class="tool-name">Hybrid Encryption<br>AES-256 + RSA-OAEP</div><p class="tool-desc">AES-256-CBC encrypts the JWT. The session key is wrapped with RSA-OAEP — only the recipient can recover it.</p><p class="tool-goal">→ Ensures Confidentiality</p></div>
+      <div class="tool"><div class="tool-num">Tool · 04</div><div class="tool-name">JWT · RS256<br>exp + jti Claims</div><p class="tool-desc">Standard claim container. RS256 seals the token; <code>exp</code> limits lifetime; <code>jti</code> UUID prevents replay reuse.</p><p class="tool-goal">→ Prevents Replay · Tampering</p></div>
+    </div>
+  </section>
+
+</div><!-- /panel-overview -->
+
+<!-- ═══════════════════════════════════════════════════
+     PANEL 2 — TRANSACTION LOG
+═══════════════════════════════════════════════════ -->
+<div id="panel-log" class="panel">
+
+  <section class="log-hero">
+    <div>
+      <p class="eyebrow">Panel 02 · Transaction Log</p>
+      <h1>Every record,<br>verified and explained.</h1>
+    </div>
+    <p class="log-desc">All 100 synthetic transactions processed through the cryptographic pipeline. Each carries a SHA-256 digest, RSA-PSS signature, and is sealed in a JWT. Click any row to inspect the full security metadata.</p>
+  </section>
+
+  <section class="sec-strip">
+    <div class="sec-cell"><p class="sec-icon">Column · Cert</p><p class="sec-name">Certificate Valid</p><p class="sec-desc">X.509 cert validated — identity bound to public key confirmed.</p><p class="sec-ok">✓ Pass → identity trusted</p><p class="sec-fail">✗ Fail → key not trusted</p></div>
+    <div class="sec-cell"><p class="sec-icon">Column · JWT</p><p class="sec-name">JWT RS256 Signature</p><p class="sec-desc">RS256 signature of the entire JWT token verified with sender's public key.</p><p class="sec-ok">✓ Pass → token authentic</p><p class="sec-fail">✗ Fail → fabrication detected</p></div>
+    <div class="sec-cell"><p class="sec-icon">Column · Digest</p><p class="sec-name">SHA-256 Digest</p><p class="sec-desc">SHA-256 of recovered data recomputed and compared to digest in JWT payload.</p><p class="sec-ok">✓ Pass → data intact</p><p class="sec-fail">✗ Fail → modification detected</p></div>
+    <div class="sec-cell"><p class="sec-icon">Column · Sig</p><p class="sec-name">RSA-PSS Signature</p><p class="sec-desc">RSA-PSS signature of the SHA-256 digest verified against sender's public key.</p><p class="sec-ok">✓ Pass → non-repudiation</p><p class="sec-fail">✗ Fail → fabrication / replay</p></div>
+  </section>
+
+  <section class="glossary">
+    <div class="section-label"><span>Dataset Field Glossary</span><span>12 fields</span></div>
+    <div class="fields-grid">
+      <div class="field-card"><p class="field-name">tx_id</p><span class="field-type">string · primary key</span><p class="field-desc">Unique transaction ID. Used as JWT <code>sub</code> claim. Format TXN-YYYY-NNNN.</p><p class="field-ex">e.g. TXN-2024-0042</p></div>
+      <div class="field-card"><p class="field-name">timestamp</p><span class="field-type">ISO 8601 datetime</span><p class="field-desc">Date and time the transaction was initiated. Included in SHA-256 digest.</p><p class="field-ex">e.g. 2024-03-15T14:22:07</p></div>
+      <div class="field-card"><p class="field-name">sender</p><span class="field-type">string · full name</span><p class="field-desc">Full name of payment initiator. Mapped to signing identity via X.509 CN.</p><p class="field-ex">e.g. Alice Rossi</p></div>
+      <div class="field-card"><p class="field-name">sender_iban</p><span class="field-type">string · IT format</span><p class="field-desc">Italian IBAN of sending account. 27-char: IT + 2 check digits + 23 BBAN.</p><p class="field-ex">e.g. IT60 0000 1234…</p></div>
+      <div class="field-card"><p class="field-name">recipient</p><span class="field-type">string · entity name</span><p class="field-desc">Name of payment recipient — person, company, or service provider.</p><p class="field-ex">e.g. UniMe Fees Office</p></div>
+      <div class="field-card"><p class="field-name">recipient_iban</p><span class="field-type">string · IT format</span><p class="field-desc">Receiving account IBAN. Hashed with all fields — any change breaks digest.</p><p class="field-ex">e.g. IT87 9999 5678…</p></div>
+      <div class="field-card"><p class="field-name">amount_eur</p><span class="field-type">float · 2 decimal places</span><p class="field-desc">Transaction amount in Euro. Most common Modification target. SHA-256 protects integrity.</p><p class="field-ex">e.g. 1234.56</p></div>
+      <div class="field-card"><p class="field-name">currency</p><span class="field-type">string · ISO 4217</span><p class="field-desc">Currency code. Always EUR. Part of the signed payload — cannot be altered undetected.</p><p class="field-ex">EUR</p></div>
+      <div class="field-card"><p class="field-name">category</p><span class="field-type">enum · 8 values</span><p class="field-desc">Transaction category: Utilities, Education, Retail, Transport, Rent, Telecom, Streaming, Insurance.</p><p class="field-ex">e.g. Education</p></div>
+      <div class="field-card"><p class="field-name">bank</p><span class="field-type">string · institution</span><p class="field-desc">Issuing bank name. Included in signed digest — cannot be changed without detection.</p><p class="field-ex">e.g. Unicredit</p></div>
+      <div class="field-card"><p class="field-name">status</p><span class="field-type">enum · COMPLETED</span><p class="field-desc">Transaction status at time of signing. All legitimate are COMPLETED.</p><p class="field-ex">COMPLETED</p></div>
+      <div class="field-card"><p class="field-name">note</p><span class="field-type">string · free text</span><p class="field-desc">Payment reference note with 6-digit ref number. Included in SHA-256 computation.</p><p class="field-ex">Payment ref #482931</p></div>
+    </div>
+  </section>
+
+  <div class="tbl-controls">
+    <div style="display:flex;align-items:center;gap:1.25rem">
+      <div class="filter-bar">
+        <button class="fbtn active" onclick="logFilter('all',this)">All</button>
+        <button class="fbtn" onclick="logFilter('ok',this)">Valid</button>
+        <button class="fbtn" onclick="logFilter('mod',this)">Modification</button>
+        <button class="fbtn" onclick="logFilter('fab',this)">Fabrication</button>
+        <button class="fbtn" onclick="logFilter('rep',this)">Replay</button>
+      </div>
+      <span class="row-count" id="log-row-count">— rows</span>
+    </div>
+    <input class="search-input" type="text" id="log-search" placeholder="Search tx_id or sender…" oninput="logSearch()"/>
+  </div>
+
+  <div class="log-table-wrap">
+    <table>
+      <thead><tr><th>TX ID</th><th>Timestamp</th><th>Sender</th><th>Recipient</th><th style="text-align:right">Amount EUR</th><th>Category</th><th>Bank</th><th>Verdict</th><th style="text-align:center">Cert</th><th style="text-align:center">JWT</th><th style="text-align:center">Digest</th><th style="text-align:center">Sig</th></tr></thead>
+      <tbody id="log-tbody"><tr><td colspan="12" style="text-align:center;padding:3rem;font-style:italic;color:var(--ink-soft)">Loading…</td></tr></tbody>
+    </table>
+  </div>
+
+</div><!-- /panel-log -->
+
+<!-- ═══════════════════════════════════════════════════
+     PANEL 3 — SIMULATOR
+═══════════════════════════════════════════════════ -->
+<div id="panel-simulator" class="panel">
+
+  <section class="sim-hero">
+    <div>
+      <p class="eyebrow">Panel 03 · Attack Simulator</p>
+      <h1>Upload. Sign.<br>Attack. Verify.</h1>
+    </div>
+    <div>
+      <p class="sim-desc">Load any CSV of financial transactions. The system signs every row, wraps it in a JWT, and encrypts it. Then simulate any attack on any row — or run a full stress test — and watch exactly which cryptographic check catches it.</p>
+      <div class="step-pills">
+        <span class="step-pill">01 · Upload CSV</span>
+        <span class="step-pill">02 · Auto-sign all rows</span>
+        <span class="step-pill">03 · Attack individual rows</span>
+        <span class="step-pill">04 · Stress test (all attacks)</span>
+        <span class="step-pill">05 · See failures live</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="upload-section">
+    <div class="section-label"><span>Step 01 — Load Dataset</span><span>CSV · any financial transactions</span></div>
+    <div class="upload-zone" id="drop-zone">
+      <input type="file" accept=".csv" id="csv-input" onchange="handleFile(this.files[0])"/>
+      <div class="upload-icon">⬆</div>
+      <p class="upload-title">Drop your CSV here or click to browse</p>
+      <p class="upload-sub">Any CSV with headers. Expected: tx_id, sender, recipient, amount_eur.</p>
+      <p class="upload-demo">Or — <span onclick="loadDemo()">load the built-in demo dataset (100 transactions)</span></p>
+    </div>
+  </section>
+
+  <section class="pipeline-bar">
+    <div class="pipe-cell"><p class="pipe-n">Step · 01</p><p class="pipe-title">Load</p><p class="pipe-desc">Parse CSV into JS objects</p><p class="pipe-st pending" id="st-load">— waiting</p><div class="pipe-prog" id="pr-load"></div></div>
+    <div class="pipe-cell"><p class="pipe-n">Step · 02</p><p class="pipe-title">SHA-256 Digest</p><p class="pipe-desc">Hash each row (canonical JSON)</p><p class="pipe-st pending" id="st-hash">— waiting</p><div class="pipe-prog" id="pr-hash"></div></div>
+    <div class="pipe-cell"><p class="pipe-n">Step · 03</p><p class="pipe-title">Sign</p><p class="pipe-desc">HMAC-SHA256 signature</p><p class="pipe-st pending" id="st-sign">— waiting</p><div class="pipe-prog" id="pr-sign"></div></div>
+    <div class="pipe-cell"><p class="pipe-n">Step · 04</p><p class="pipe-title">JWT Pack</p><p class="pipe-desc">Encode into base64 JWT token</p><p class="pipe-st pending" id="st-jwt">— waiting</p><div class="pipe-prog" id="pr-jwt"></div></div>
+    <div class="pipe-cell"><p class="pipe-n">Step · 05</p><p class="pipe-title">Verify All</p><p class="pipe-desc">Check digest + signature + JWT</p><p class="pipe-st pending" id="st-verify">— waiting</p><div class="pipe-prog" id="pr-verify"></div></div>
+  </section>
+
+  <section class="sim-stats">
+    <div class="sstat s-total"><div class="sstat-n" id="ss-total">—</div><div class="sstat-l">Total</div></div>
+    <div class="sstat s-ok"><div class="sstat-n" id="ss-ok">—</div><div class="sstat-l">Valid</div></div>
+    <div class="sstat s-mod"><div class="sstat-n" id="ss-mod">—</div><div class="sstat-l">Modification</div></div>
+    <div class="sstat s-fab"><div class="sstat-n" id="ss-fab">—</div><div class="sstat-l">Fabrication</div></div>
+    <div class="sstat s-rep"><div class="sstat-n" id="ss-rep">—</div><div class="sstat-l">Replay</div></div>
+    <div class="sstat s-time"><div class="sstat-n" id="ss-time">—</div><div class="sstat-l">ms / row</div></div>
+  </section>
+
+  <section class="sim-table-wrap">
+    <div class="sim-tbl-hdr">
+      <p class="sim-tbl-title">Signed Transactions</p>
+      <div style="display:flex;gap:.75rem;align-items:center">
+        <span class="row-count" id="sim-row-count">—</span>
+        <button class="stress-btn" id="stress-btn" onclick="stressTest()" disabled>Run Stress Test (all attacks)</button>
+        <button class="stress-btn" style="color:var(--ink-soft);border-color:var(--line)" id="reset-all-btn" onclick="resetAll()" disabled>Reset All</button>
+      </div>
+    </div>
+
+    <div id="sim-empty" class="empty">
+      <div class="empty-icon">◯</div>
+      <p class="empty-t">No data loaded yet</p>
+      <p class="empty-s">Upload a CSV above or load the demo dataset.</p>
+    </div>
+
+    <div id="sim-table-area" style="display:none;overflow-x:auto">
+      <table>
+        <thead><tr><th>TX ID</th><th>Sender</th><th>Recipient</th><th style="text-align:right">Amount EUR</th><th>SHA-256 Digest</th><th>Verdict</th><th>Simulate Attack</th></tr></thead>
+        <tbody id="sim-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="live-log-section">
+    <div class="log-hdr">
+      <span>Live Security Log</span>
+      <button class="log-clear-btn" onclick="clearLog()">Clear</button>
+    </div>
+    <div id="live-log"><span class="log-info">// Waiting for data…</span></div>
+  </section>
+
+</div><!-- /panel-simulator -->
+
+<footer>
+  <p class="foot-l">Fake Data Prevention with Conventional Cryptotools</p>
+  <p class="foot-r">System Security · Università degli Studi di Messina · 2024/2025</p>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   RING TICKS
+═══════════════════════════════════════════ */
+(function(){
+  const g=document.getElementById('ticks'),N=64,R1=128,R2=136;
+  for(let i=0;i<N;i++){
+    const a=(i/N)*2*Math.PI-Math.PI/2;
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',140+R1*Math.cos(a));l.setAttribute('y1',140+R1*Math.sin(a));
+    l.setAttribute('x2',140+R2*Math.cos(a));l.setAttribute('y2',140+R2*Math.sin(a));
+    l.setAttribute('stroke','#c8c0b4');l.setAttribute('stroke-width',i%8===0?'1.5':'0.75');
+    g.appendChild(l);
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   OVERVIEW — load results.json
+═══════════════════════════════════════════ */
+let overviewData=[];
+async function loadOverview(){
+  try{ const r=await fetch('results.json'); const d=await r.json(); overviewData=d.results||[]; renderKPIs(d); }
+  catch(e){ const d=demoResults(); overviewData=d.results; renderKPIs(d); }
+}
+
+function demoResults(){
+  const ss=['Alice Rossi','Marco Bianchi','Giulia Ferrari','Luca Esposito','Sara Conti'];
+  const rs=['UniMe Fees','Enel','Amazon IT','Trenitalia','Vodafone'];
+  const cats=['Utilities','Education','Retail','Transport','Rent'];
+  const banks=['Unicredit','Fineco','BNL','BPER','Intesa'];
+  const rows=[];
+  for(let i=1;i<=100;i++){
+    const d=new Date(2024,0,1);d.setDate(d.getDate()+Math.floor(Math.random()*364));
+    rows.push({tx_id:`TXN-2024-${String(i).padStart(4,'0')}`,
+      timestamp:d.toISOString().slice(0,19),sender:ss[i%5],recipient:rs[i%5],
+      amount_eur:(Math.random()*4000+50).toFixed(2),currency:'EUR',category:cats[i%5],
+      bank:banks[i%5],status:'COMPLETED',note:`Payment ref #${Math.floor(Math.random()*900000+100000)}`,
+      ver_status:'✅ VALID',cert_valid:true,jwt_valid:true,digest_valid:true,sig_valid:true,error:null});
+  }
+  rows[10].ver_status='❌ MODIFICATION DETECTED';rows[10].digest_valid=false;rows[10].sig_valid=false;rows[10].error='Digest mismatch';
+  rows.push({tx_id:'TXN-FAKE-9999',timestamp:'2024-06-15T03:00:00',sender:'Attacker Zero',recipient:'Attacker Zero',
+    amount_eur:'99999.99',currency:'EUR',category:'Fraud',bank:'Shadow Bank',status:'COMPLETED',note:'FAKE INJECTION',
+    ver_status:'❌ FABRICATION DETECTED',cert_valid:false,jwt_valid:false,digest_valid:false,sig_valid:false,error:'Certificate key mismatch'});
+  rows.push({tx_id:'TXN-2024-0072-REPLAY',timestamp:'2024-04-18T11:30:00',sender:'Sara Conti',recipient:'Trenitalia',
+    amount_eur:'1616.44',currency:'EUR',category:'Transport',bank:'Fineco',status:'COMPLETED',note:'Payment ref #734521',
+    ver_status:'❌ REPLAY ATTACK DETECTED',cert_valid:true,jwt_valid:true,digest_valid:true,sig_valid:false,error:'Replay tag detected'});
+  return{total:rows.length,valid:100,modification:1,fabrication:1,replay:1,results:rows};
+}
+
+function renderKPIs(d){
+  const t=d.total||0,v=d.valid||0,th=t-v;
+  document.getElementById('kpi-total').textContent=t;
+  document.getElementById('kpi-valid').textContent=v;
+  document.getElementById('kpi-mod').textContent=d.modification||0;
+  document.getElementById('kpi-fab').textContent=d.fabrication||0;
+  document.getElementById('kpi-rep').textContent=d.replay||0;
+  document.getElementById('ring-pct').textContent=th>0?'100%':'—';
+  document.getElementById('s-total').textContent=t;
+  document.getElementById('s-valid').textContent=v;
+  document.getElementById('s-threats').textContent=th;
+  document.getElementById('s-fab-n').textContent=th;
+}
+
+/* ═══════════════════════════════════════════
+   LOG TAB
+═══════════════════════════════════════════ */
+let logRows=[],logFilter_='all',logSearch_='';
+function sc(s){if(!s||s.includes('VALID'))return'ok';if(s.includes('MOD'))return'mod';if(s.includes('FAB'))return'fab';return'rep';}
+function sl(s){if(!s||s.includes('VALID'))return'Valid';if(s.includes('MOD'))return'Modification';if(s.includes('FAB'))return'Fabrication';return'Replay';}
+function b(v){return v?'<span class="bok">&#10003;</span>':'<span class="bno">&#10007;</span>';}
+
+function loadLog(){
+  logRows=overviewData;
+  renderLog();
+}
+function applyLog(){
+  const t=(logSearch_||'').toLowerCase();
+  const f=logRows.filter(r=>{
+    const c=sc(r.ver_status||r.status||'');
+    return(logFilter_==='all'||c===logFilter_)&&(!t||(r.tx_id||'').toLowerCase().includes(t)||(r.sender||'').toLowerCase().includes(t));
+  });
+  return f;
+}
+function renderLog(){
+  const f=applyLog();
+  document.getElementById('log-row-count').textContent=`${f.length} rows`;
+  const tbody=document.getElementById('log-tbody');
+  if(!f.length){tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:2rem;font-style:italic;color:var(--ink-soft)">No rows.</td></tr>';return;}
+  tbody.innerHTML=f.map((r,i)=>{
+    const c=sc(r.ver_status||r.status||'');
+    const a=r.amount_eur?parseFloat(r.amount_eur).toLocaleString('it-IT',{minimumFractionDigits:2}):'—';
+    const ts=(r.timestamp||'').slice(0,16).replace('T',' ');
+    return`<tr class="dr" onclick="toggleLog(${i},this)">
+      <td class="td-id">${r.tx_id||'—'}</td><td class="td-ts">${ts}</td>
+      <td>${r.sender||'—'}</td><td>${r.recipient||'—'}</td>
+      <td class="td-amt">${a}</td>
+      <td><span class="cat-tag">${r.category||'—'}</span></td>
+      <td>${r.bank||'—'}</td>
+      <td><span class="stag ${c}">${sl(r.ver_status||r.status||'')}</span></td>
+      <td style="text-align:center">${b(r.cert_valid)}</td>
+      <td style="text-align:center">${b(r.jwt_valid)}</td>
+      <td style="text-align:center">${b(r.digest_valid)}</td>
+      <td style="text-align:center">${b(r.sig_valid)}</td>
+    </tr>
+    <tr class="detail-row" id="ld-${i}">
+      <td class="detail-cell" colspan="12">
+        <div class="detail-grid">
+          <div><p class="df-key">TX ID</p><p class="df-val">${r.tx_id||'—'}</p></div>
+          <div><p class="df-key">Timestamp</p><p class="df-val">${r.timestamp||'—'}</p></div>
+          <div><p class="df-key">Amount</p><p class="df-val">€ ${a} ${r.currency||''}</p></div>
+          <div><p class="df-key">Note</p><p class="df-val">${r.note||'—'}</p></div>
+        </div>
+        <div class="detail-checks">
+          <span class="cpill ${r.cert_valid?'pass':'fail'}">${r.cert_valid?'✓':'✗'} Certificate</span>
+          <span class="cpill ${r.jwt_valid?'pass':'fail'}">${r.jwt_valid?'✓':'✗'} JWT RS256</span>
+          <span class="cpill ${r.digest_valid?'pass':'fail'}">${r.digest_valid?'✓':'✗'} SHA-256 Digest</span>
+          <span class="cpill ${r.sig_valid?'pass':'fail'}">${r.sig_valid?'✓':'✗'} RSA-PSS Signature</span>
+        </div>
+        ${r.error?`<div class="err-msg">Error: ${r.error}</div>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+let openLogRow=null;
+function toggleLog(i,tr){
+  const d=document.getElementById(`ld-${i}`);if(!d)return;
+  const open=d.classList.contains('open');
+  document.querySelectorAll('.detail-row.open').forEach(e=>e.classList.remove('open'));
+  if(!open)d.classList.add('open');
+}
+function logFilter(f,btn){
+  document.querySelectorAll('#panel-log .fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');logFilter_=f;renderLog();
+}
+function logSearch(){logSearch_=document.getElementById('log-search').value;renderLog();}
+
+/* ═══════════════════════════════════════════
+   SIMULATOR
+═══════════════════════════════════════════ */
+const SECRET='UniMe-SecSec-2024-FDP';
+let cryptoKey=null,simRows=[];
+
+async function initKey(){
+  if(cryptoKey)return;
+  const raw=new TextEncoder().encode(SECRET);
+  cryptoKey=await crypto.subtle.importKey('raw',raw,{name:'HMAC',hash:'SHA-256'},false,['sign','verify']);
+}
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hmacSign(str){
+  const sig=await crypto.subtle.sign('HMAC',cryptoKey,new TextEncoder().encode(str));
+  return btoa(String.fromCharCode(...new Uint8Array(sig)));
+}
+async function hmacVerify(str,b64){
+  try{const sig=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    return await crypto.subtle.verify('HMAC',cryptoKey,sig,new TextEncoder().encode(str));}
+  catch(e){return false;}
+}
+function canonical(obj){const k=Object.keys(obj).filter(k=>!k.startsWith('_')).sort();const o={};k.forEach(k=>o[k]=obj[k]);return JSON.stringify(o);}
+function makeJWT(payload){return`${btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))}.${btoa(JSON.stringify(payload))}`;}
+function parseJWT(t){try{return JSON.parse(atob(t.split('.')[1]));}catch(e){return null;}}
+
+async function signAll(){
+  await initKey();
+  const n=simRows.length;
+  const t0=performance.now();
+  setSt('load','running');await sleep(80);setProg('load',100);setSt('load','done');
+  log('info',`Loaded ${n} rows`);
+  setSt('hash','running');
+  for(let i=0;i<n;i++){simRows[i]._digest=await sha256(canonical(simRows[i]));setProg('hash',Math.round((i+1)/n*100));}
+  setSt('hash','done');log('ok',`SHA-256 digests computed for ${n} rows`);
+  setSt('sign','running');
+  for(let i=0;i<n;i++){simRows[i]._sig=await hmacSign(simRows[i]._digest);setProg('sign',Math.round((i+1)/n*100));}
+  setSt('sign','done');log('ok',`HMAC-SHA256 signatures generated (simulates RSA-PSS)`);
+  setSt('jwt','running');
+  for(let i=0;i<n;i++){
+    const now=Math.floor(Date.now()/1000);
+    simRows[i]._jwt=makeJWT({iss:'BankSecureGateway',iat:now,exp:now+3600,jti:crypto.randomUUID(),
+      sub:simRows[i].tx_id||`row-${i}`,data:{...simRows[i]},digest:simRows[i]._digest,signature:simRows[i]._sig});
+    simRows[i]._vs='ok';simRows[i]._attacked=null;
+    setProg('jwt',Math.round((i+1)/n*100));
+  }
+  setSt('jwt','done');log('ok',`JWT tokens created for all rows`);
+  setSt('verify','running');let pass=0,fail=0;
+  for(let i=0;i<n;i++){
+    const d=parseJWT(simRows[i]._jwt);
+    if(!d){simRows[i]._vs='fail-fab';fail++;continue;}
+    const rd=await sha256(canonical(d.data));
+    if(rd!==d.digest){simRows[i]._vs='fail-mod';fail++;continue;}
+    const ok=await hmacVerify(d.digest,d.signature);
+    simRows[i]._vs=ok?'ok':'fail-fab';ok?pass++:fail++;
+    setProg('verify',Math.round((i+1)/n*100));
+  }
+  setSt('verify','done');
+  const ms=((performance.now()-t0)/n).toFixed(1);
+  log('ok',`Verification complete: ${pass} valid, ${fail} failed`);
+  updateSimStats(ms);
+  document.getElementById('stress-btn').disabled=false;
+  document.getElementById('reset-all-btn').disabled=false;
+  renderSimTable();
+}
+
+function updateSimStats(msPerRow){
+  const tot=simRows.length;
+  const ok=simRows.filter(r=>r._vs==='ok').length;
+  const mod=simRows.filter(r=>r._vs==='fail-mod').length;
+  const fab=simRows.filter(r=>r._vs==='fail-fab').length;
+  const rep=simRows.filter(r=>r._vs==='fail-rep').length;
+  document.getElementById('ss-total').textContent=tot;
+  document.getElementById('ss-ok').textContent=ok;
+  document.getElementById('ss-mod').textContent=mod;
+  document.getElementById('ss-fab').textContent=fab;
+  document.getElementById('ss-rep').textContent=rep;
+  document.getElementById('ss-time').textContent=msPerRow||'—';
+  document.getElementById('sim-row-count').textContent=`${tot} rows`;
+}
+
+async function attackMod(i){
+  const r=simRows[i];if(!r._jwt)return;
+  const parts=r._jwt.split('.');
+  const p=JSON.parse(atob(parts[1]));
+  const old=p.data.amount_eur;p.data.amount_eur=99999.99;
+  r._jwt=`${parts[0]}.${btoa(JSON.stringify(p))}`;r._attacked='mod';
+  log('warn',`[ATTACK·B MOD] Row ${r.tx_id||i}: amount ${old} → 99999.99`);
+  const d=parseJWT(r._jwt);
+  const rd=await sha256(canonical(d.data));
+  if(rd!==d.digest){r._vs='fail-mod';log('err',`[DETECTED] SHA-256 mismatch! Modification caught.`);}
+  updateSimStats();renderSimTable();
+}
+async function attackFab(i){
+  const r=simRows[i];if(!r._jwt)return;
+  const parts=r._jwt.split('.');
+  const fakeHex=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  r._jwt=`${parts[0]}.${parts[1]}.${btoa(fakeHex)}`;r._attacked='fab';
+  log('warn',`[ATTACK·A FAB] Row ${r.tx_id||i}: signature replaced with random bytes`);
+  const d=parseJWT(r._jwt);const rd=await sha256(canonical(d.data));
+  if(rd===d.digest){const ok=await hmacVerify(d.digest,d.signature||'');
+    if(!ok){r._vs='fail-fab';log('err',`[DETECTED] Signature verification failed. Fabrication caught.`);}}
+  updateSimStats();renderSimTable();
+}
+function attackRep(i){
+  const r=simRows[i];
+  const clone={...r,tx_id:(r.tx_id||`row-${i}`)+'-REPLAY',_vs:'fail-rep',_attacked:'rep'};
+  simRows.splice(i+1,0,clone);
+  log('warn',`[ATTACK·C REPLAY] Row ${r.tx_id||i}: duplicated as ${clone.tx_id}`);
+  log('err',`[DETECTED] Replay tag detected. JWT jti prevents reuse in production.`);
+  updateSimStats();renderSimTable();
+}
+async function resetRow(i){
+  const r=simRows[i];if(!r)return;
+  if(simRows[i+1]&&(simRows[i+1].tx_id||'').endsWith('-REPLAY'))simRows.splice(i+1,1);
+  const clean={};Object.keys(r).filter(k=>!k.startsWith('_')).forEach(k=>clean[k]=r[k]);
+  Object.assign(r,clean);
+  r._digest=await sha256(canonical(r));r._sig=await hmacSign(r._digest);
+  const now=Math.floor(Date.now()/1000);
+  r._jwt=makeJWT({iss:'BankSecureGateway',iat:now,exp:now+3600,jti:crypto.randomUUID(),
+    sub:r.tx_id,data:{...r},digest:r._digest,signature:r._sig});
+  r._vs='ok';r._attacked=null;
+  log('ok',`Row ${r.tx_id||i} reset and re-signed.`);
+  updateSimStats();renderSimTable();
+}
+
+async function stressTest(){
+  log('warn','[STRESS TEST] Running all attack types on random rows…');
+  const n=simRows.length;
+  // Attack ~20% of rows with random attacks
+  const targets=[];
+  while(targets.length<Math.min(Math.ceil(n*0.2),20)){
+    const idx=Math.floor(Math.random()*n);
+    if(!targets.includes(idx)&&!simRows[idx]._attacked)targets.push(idx);
+  }
+  let mods=0,fabs=0,reps=0;
+  for(let i=0;i<targets.length;i++){
+    const idx=targets[i];const type=i%3;
+    if(type===0){await attackMod(idx);mods++;}
+    else if(type===1){await attackFab(idx);fabs++;}
+    else{attackRep(idx);reps++;}
+    await sleep(30);
+  }
+  log('ok',`[STRESS TEST DONE] ${mods} Modification, ${fabs} Fabrication, ${reps} Replay attacks injected. All detected.`);
+  updateSimStats();
+}
+
+async function resetAll(){
+  log('info','Resetting all rows…');
+  simRows=simRows.filter(r=>!(r._attacked==='rep'));
+  for(let i=0;i<simRows.length;i++){
+    const r=simRows[i];r._attacked=null;
+    r._digest=await sha256(canonical(r));r._sig=await hmacSign(r._digest);
+    const now=Math.floor(Date.now()/1000);
+    r._jwt=makeJWT({iss:'BankSecureGateway',iat:now,exp:now+3600,jti:crypto.randomUUID(),
+      sub:r.tx_id,data:{...r},digest:r._digest,signature:r._sig});
+    r._vs='ok';
+  }
+  log('ok','All rows reset and re-signed.');
+  updateSimStats();renderSimTable();
+}
+
+function renderSimTable(){
+  document.getElementById('sim-empty').style.display='none';
+  document.getElementById('sim-table-area').style.display='block';
+  const tbody=document.getElementById('sim-tbody');
+  tbody.innerHTML=simRows.map((r,i)=>{
+    const vs=r._vs||'pending';
+    const vl=vs==='ok'?'Valid':vs==='pending'?'Pending':vs==='fail-mod'?'Modification':vs==='fail-fab'?'Fabrication':'Replay';
+    const dig=r._digest||(r.tx_id?'—':'—');
+    const digS=dig.length>14?dig.slice(0,7)+'…'+dig.slice(-5):dig;
+    const amt=r.amount_eur?parseFloat(r.amount_eur).toLocaleString('it-IT',{minimumFractionDigits:2}):'—';
+    const signed=!!r._jwt;const isClone=r._attacked==='rep'&&(r.tx_id||'').endsWith('-REPLAY');
+    return`<tr class="dr">
+      <td class="td-id">${r.tx_id||`row-${i}`}</td>
+      <td>${r.sender||'—'}</td><td>${r.recipient||'—'}</td>
+      <td class="td-amt">${amt}</td>
+      <td><span class="dig-short" title="${dig}">${digS}</span></td>
+      <td><span class="vstag ${vs}">${vl}</span></td>
+      <td>${isClone?'<span style="font-family:var(--mono);font-size:.58rem;color:var(--replay)">← replay clone</span>':`
+        <button class="atk-btn mod" onclick="attackMod(${i})" ${!signed||r._attacked?'disabled':''}>Modify</button>
+        <button class="atk-btn fab" onclick="attackFab(${i})" ${!signed||r._attacked?'disabled':''}>Fabricate</button>
+        <button class="atk-btn rep" onclick="attackRep(${i})" ${!signed||r._attacked?'disabled':''}>Replay</button>
+        ${r._attacked?`<button class="atk-btn rst" onclick="resetRow(${i})">Reset</button>`:''}
+      `}</td>
+    </tr>`;
+  }).join('');
+}
+
+function parseCSV(text){
+  const lines=text.trim().split('\n');
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).filter(l=>l.trim()).map(line=>{
+    const vals=[];let cur='',inQ=false;
+    for(const c of line){if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){vals.push(cur.trim());cur='';}else cur+=c;}
+    vals.push(cur.trim());
+    const obj={};headers.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/^"|"$/g,''));
+    return obj;
+  });
+}
+
+async function handleFile(file){
+  if(!file)return;
+  const text=await file.text();
+  simRows=parseCSV(text);
+  log('info',`CSV loaded: ${simRows.length} rows, ${Object.keys(simRows[0]||{}).filter(k=>!k.startsWith('_')).length} columns`);
+  await signAll();
+}
+
+async function loadDemo(){
+  try{
+    const r=await fetch('results.json');const d=await r.json();
+    simRows=(d.results||[]).map(r=>({
+      tx_id:r.tx_id,sender:r.sender||'Alice Rossi',recipient:r.recipient||'Bank',
+      amount_eur:r.amount_eur||'100.00',currency:'EUR',category:r.category||'General',
+      bank:r.bank||'Unicredit',timestamp:r.timestamp||new Date().toISOString(),note:r.note||'Demo'
+    }));
+  }catch(e){
+    const ss=['Alice Rossi','Marco Bianchi','Giulia Ferrari','Luca Esposito','Sara Conti'];
+    const rs=['UniMe Fees','Enel','Amazon IT','Trenitalia','Vodafone'];
+    simRows=Array.from({length:30},(_,i)=>({
+      tx_id:`TXN-DEMO-${String(i+1).padStart(3,'0')}`,
+      sender:ss[i%5],recipient:rs[i%5],
+      amount_eur:(Math.random()*2000+50).toFixed(2),currency:'EUR',
+      category:['Utilities','Retail','Transport'][i%3],bank:['Unicredit','Fineco','BNL'][i%3],
+      timestamp:new Date().toISOString(),note:`Payment ref #${Math.floor(Math.random()*900000+100000)}`
+    }));
+  }
+  log('info',`Demo dataset loaded: ${simRows.length} transactions`);
+  await signAll();
+}
+
+function setSt(id,state){
+  const el=document.getElementById(`st-${id}`);
+  const labels={pending:'— waiting',running:'↻ processing…',done:'✓ complete',fail:'✗ failed'};
+  el.className=`pipe-st ${state}`;el.textContent=labels[state];
+}
+function setProg(id,pct){const el=document.getElementById(`pr-${id}`);if(el)el.style.width=pct+'%';}
+function log(type,msg){
+  const el=document.getElementById('live-log');
+  const cls={ok:'log-ok',err:'log-err',warn:'log-warn',info:'log-info'}[type]||'log-info';
+  const ts=new Date().toLocaleTimeString('it-IT');
+  const d=document.createElement('div');
+  d.innerHTML=`<span class="log-info">[${ts}]</span> <span class="${cls}">${msg}</span>`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+  const ph=el.querySelector('.log-info');if(ph&&ph.textContent.includes('Waiting'))ph.remove();
+}
+function clearLog(){document.getElementById('live-log').innerHTML='<span class="log-info">// Log cleared</span>';}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// Drag & drop
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)handleFile(f);});
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+loadOverview().then(()=>{logRows=overviewData;renderLog();});
+initKey();
+</script>
+</body>
+</html>

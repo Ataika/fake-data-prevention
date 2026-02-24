@@ -4,15 +4,15 @@ pipeline.py
 Full data-flow pipeline:
 
   SENDER SIDE:
-    CSV row → SHA-256 digest → RSA-PSS signature → JWT (RS256) → AES-256 encryption → DB
+    CSV row -> SHA-256 digest -> RSA-PSS signature -> JWT (RS256) -> AES-256 encryption -> DB
 
   ATTACKER SIMULATION:
-    Attack A — Fabrication : inject a forged row without a valid private key
-    Attack B — Modification: tamper with an amount directly in the database
-    Attack C — Replay      : reuse an expired / stolen JWT token
+    Attack A - Fabrication : inject a forged row without a valid private key
+    Attack B - Modification: tamper with an amount directly in the database
+    Attack C - Replay      : reuse an expired / stolen JWT token
 
   RECEIVER SIDE:
-    DB row → AES decrypt → JWT verify → digest recompute → RSA signature verify → ✅ / ❌
+    DB row -> AES decrypt -> JWT verify -> digest recompute -> RSA signature verify -> valid/invalid
 """
 
 import sys, os
@@ -34,9 +34,7 @@ from crypto_engine import (
 )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  DATABASE HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
+# DATABASE HELPERS
 
 def init_db(db_path: str):
     conn = sqlite3.connect(db_path)
@@ -80,25 +78,23 @@ def fetch_all_ids(conn):
     return [r[0] for r in cur.fetchall()]
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  SENDER PIPELINE
-# ─────────────────────────────────────────────────────────────────────────────
+# SENDER PIPELINE
 
 def protect_transaction(tx: dict, private_key, certificate, recipient_public_key) -> dict:
     """
     Full sender-side pipeline for one transaction row.
     Returns the encrypted bundle ready for storage.
     """
-    # Step 1 — Message Digest (Integrity)
+    # Step 1 - Message Digest (Integrity)
     digest = compute_digest(tx)
 
-    # Step 2 — Digital Signature (Authenticity + Non-repudiation)
+    # Step 2 - Digital Signature (Authenticity + Non-repudiation)
     rsa_sig = sign_digest(digest, private_key)
 
-    # Step 3 — JWT packaging (Secure claim container + Replay protection)
+    # Step 3 - JWT packaging (Secure claim container + Replay protection)
     token = create_jwt(tx, digest, rsa_sig, private_key)
 
-    # Step 4 — Hybrid Encryption (Confidentiality)
+    # Step 4 - Hybrid Encryption (Confidentiality)
     enc_bundle = encrypt_token(token, recipient_public_key)
 
     return enc_bundle
@@ -121,15 +117,13 @@ def run_sender(csv_path: str, conn, private_key, certificate, recipient_public_k
     return tx_ids
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  RECEIVER / VERIFIER PIPELINE
-# ─────────────────────────────────────────────────────────────────────────────
+# RECEIVER / VERIFIER PIPELINE
 
-VERIFY_OK     = "✅ VALID"
-VERIFY_TAMPER = "❌ MODIFICATION DETECTED"
-VERIFY_FAKE   = "❌ FABRICATION DETECTED"
-VERIFY_REPLAY = "❌ REPLAY ATTACK DETECTED"
-VERIFY_CERT   = "❌ INVALID CERTIFICATE"
+VERIFY_OK     = "[OK] VALID"
+VERIFY_TAMPER = "[FAIL] MODIFICATION DETECTED"
+VERIFY_FAKE   = "[FAIL] FABRICATION DETECTED"
+VERIFY_REPLAY = "[FAIL] REPLAY ATTACK DETECTED"
+VERIFY_CERT   = "[FAIL] INVALID CERTIFICATE"
 
 def verify_transaction(row_tuple, recipient_private_key) -> dict:
     """
@@ -210,7 +204,7 @@ def verify_transaction(row_tuple, recipient_private_key) -> dict:
     if not verify_signature(claimed_digest, rsa_sig, sender_pub_key):
         result["status"]   = VERIFY_FAKE
         result["sig_valid"] = False
-        result["error"]    = "RSA signature invalid — Fabrication detected"
+        result["error"]    = "RSA signature invalid - Fabrication detected"
         return result
 
     result["sig_valid"] = True
@@ -218,7 +212,7 @@ def verify_transaction(row_tuple, recipient_private_key) -> dict:
     # Check if this row was tagged as REPLAY in the DB
     if db_status == "REPLAY":
         result["status"] = VERIFY_REPLAY
-        result["error"]  = "Row tagged as REPLAY — duplicate transaction ID injected"
+        result["error"]  = "Row tagged as REPLAY - duplicate transaction ID injected"
         return result
 
     result["status"]    = VERIFY_OK
@@ -236,13 +230,10 @@ def run_verifier(conn, recipient_private_key) -> list:
     return results
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  ATTACK SIMULATION
-# ─────────────────────────────────────────────────────────────────────────────
-
+# ATTACK SIMULATION
 def attack_fabrication(conn, private_key_of_attacker, recipient_public_key, certificate):
     """
-    Attack A — Fabrication
+    Attack A - Fabrication
     Attacker tries to inject a completely fake transaction into the DB,
     signed with their own (different) private key.
     The certificate check / JWT RS256 verify will catch the key mismatch.
@@ -270,7 +261,7 @@ def attack_fabrication(conn, private_key_of_attacker, recipient_public_key, cert
 
 def attack_modification(conn, tx_id: str):
     """
-    Attack B — Modification
+    Attack B - Modification
     Attacker has direct DB access and manually changes the ciphertext bytes.
     The SHA-256 digest check and JWT signature will detect the tampering.
     """
@@ -294,7 +285,7 @@ def attack_modification(conn, tx_id: str):
 
 def attack_replay(conn, tx_id: str):
     """
-    Attack C — Replay
+    Attack C - Replay
     Attacker copies an existing (valid) protected row and re-inserts it
     under a new ID, simulating a duplicated transaction.
     JWT jti uniqueness + exp time will flag this in a real system.

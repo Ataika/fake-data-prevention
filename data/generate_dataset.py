@@ -1,5 +1,5 @@
 """
-Dataset Generator — Synthetic Financial Transactions
+Dataset Generator - Synthetic Financial Transactions
 Generates a realistic CSV of 100 bank transactions for the project demo.
 """
 
@@ -89,4 +89,4 @@ if __name__ == "__main__":
         writer.writeheader()
         writer.writerows(txns)
 
-    print(f"[OK] Dataset generated: {len(txns)} transactions → {out_path}")
+    print(f"[OK] Dataset generated: {len(txns)} transactions -> {out_path}")
