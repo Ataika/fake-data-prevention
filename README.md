@@ -120,9 +120,3 @@ If API runs on non-default port (for example `5050`), set in browser console:
 localStorage.setItem('FDP_API_BASE', 'http://localhost:5050');
 location.reload();
 ```
-
-## Notes
-
-- The current setup is suitable for academic demo and evaluation.
-- For full enterprise production, additional hardening is required (authN/authZ, rate limiting, TLS termination, monitoring, PostgreSQL migration).
-
