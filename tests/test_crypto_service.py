@@ -39,8 +39,8 @@ class CryptoServiceTests(unittest.TestCase):
         sig = hmac_sign(digest)
         self.assertTrue(verify_hmac(digest, sig))
         self.assertFalse(verify_hmac(digest, "deadbeef"))
+        self.assertFalse(verify_hmac(compute_sha256("hello2"), sig))
 
 
 if __name__ == "__main__":
     unittest.main()
-
